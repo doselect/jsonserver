@@ -8,7 +8,7 @@ const app = express();
 
 app.use(middlewares);
 app.use('/.netlify/functions/json/:fileName', (req, res, next) => {
-   const opts = { url: `https://raw.githubusercontent.com/doselect/jsonserver/master/${fileName}.json`, json: true }
+   const opts = { url: `https://raw.githubusercontent.com/doselect/jsonserver/master/data/${fileName}.json`, json: true }
    request(opts, function (error, response, body) {
       if (error) {
          return res.status(400).send({ error });
