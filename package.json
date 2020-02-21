@@ -1,0 +1,28 @@
+{
+  "name": "jserver",
+  "version": "1.0.0",
+  "description": "DoSelect Json Server",
+  "main": "functions/server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "json-server": "^0.16.0",
+    "netlify-lambda": "^1.6.3",
+    "serverless-http": "^2.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "netlify-lambda build express",
+    "start": "node server-local.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doselect/jsonserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doselect/jsonserver/issues"
+  },
+  "homepage": "https://github.com/doselect/jsonserver#readme"
+}
