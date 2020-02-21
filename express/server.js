@@ -8,13 +8,14 @@ const app = express();
 
 app.use(middlewares);
 app.use('/.netlify/functions/json/:fileName', (req, res, next) => {
+   const { fileName } = req.params;
    const opts = { url: `https://raw.githubusercontent.com/doselect/jsonserver/master/data/${fileName}.json`, json: true }
    request(opts, function (error, response, body) {
       if (error) {
          return res.status(400).send({ error });
       }
       const jsonrouter = jsonServer.router(body);
-      jsonrouter(body);
+      jsonrouter(req, res, next);
    });
 });
 
