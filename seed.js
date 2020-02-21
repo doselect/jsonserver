@@ -12,12 +12,12 @@ function hex() {
 }
 
 // Tables
-db.posts    = []
-db.comments = []
-db.albums   = []
-db.photos   = []
-db.users    = []
-db.todos    = []
+// db.posts    = []
+// db.comments = []
+// db.albums   = []
+// db.photos   = []
+// db.users    = []
+// db.todos    = []
 db.notes =  require('./models/notes.js')
 
 
