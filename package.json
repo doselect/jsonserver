@@ -5,12 +5,16 @@
   "main": "functions/server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "json-beautify": "^1.1.1",
     "json-server": "^0.16.0",
+    "lodash": "^4.17.15",
     "netlify-lambda": "^1.6.3",
     "request": "^2.88.2",
     "serverless-http": "^2.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "image-downloader": "^3.5.0"
+  },
   "scripts": {
     "build": "netlify-lambda build express",
     "start": "node server-local.js"
