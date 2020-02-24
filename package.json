@@ -5,15 +5,11 @@
   "main": "functions/server.js",
   "dependencies": {
     "express": "^4.17.1",
-    "json-server": "^0.16.0",
     "netlify-lambda": "^1.6.3",
     "request": "^2.88.2",
-    "serverless-http": "^2.3.1"
+    "serverless-http": "1.8.0"
   },
   "devDependencies": {
-    "countrycitystatejson": "^0.2.15",
-    "json-beautify": "^1.1.1",
-    "image-downloader": "^3.5.0",
     "lodash": "^4.17.15"
   },
   "scripts": {
