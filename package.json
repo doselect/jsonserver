@@ -5,6 +5,7 @@
   "main": "functions/server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "json-server": "https://github.com/doselect/json-server.git",
     "netlify-lambda": "^1.6.3",
     "request": "^2.88.2",
     "serverless-http": "1.8.0"
@@ -14,7 +15,8 @@
   },
   "scripts": {
     "build": "netlify-lambda build express",
-    "start": "node server-local.js"
+    "start": "node server-local.js",
+    "serve": "netlify-lambda serve data"
   },
   "repository": {
     "type": "git",
