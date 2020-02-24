@@ -19,7 +19,8 @@
   },
   "scripts": {
     "build": "netlify-lambda build express",
-    "start": "node server-local.js"
+    "start": "node server-local.js",
+    "seed": "node seed.js"
   },
   "repository": {
     "type": "git",
