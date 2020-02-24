@@ -8,5 +8,5 @@ const db = {}
 _.set(db, 'countries', require('./data/countries.json'))
 _.set(db, 'notes', require('./data/notes.json'))
 _.set(db, 'employees', require('./data/employees.json'))
-console.log(_.take(db.countries, 10))
+
 fs.writeFileSync(path.join(__dirname, './data/db.json'), beautify(db, null, 2, 80), 'utf8');
