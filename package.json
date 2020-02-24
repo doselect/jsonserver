@@ -11,12 +11,18 @@
     "serverless-http": "1.8.0"
   },
   "devDependencies": {
-    "lodash": "^4.17.15"
+    "countrycitystatejson": "^0.2.15",
+    "faker": "^4.1.0",
+    "image-downloader": "^3.5.0",
+    "json-beautify": "^1.1.1",
+    "lodash": "^4.17.15",
+    "rosie": "^2.0.1"
   },
   "scripts": {
     "build": "netlify-lambda build express",
     "start": "node server-local.js",
-    "serve": "netlify-lambda serve data"
+    "serve": "netlify-lambda serve data",
+    "seed": "node seed.js"
   },
   "repository": {
     "type": "git",
