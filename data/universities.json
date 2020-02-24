@@ -1,0 +1,604 @@
+{
+  "universities": [
+    {
+      "atc": "DE",
+      "country": "Germany",
+      "name": "Georg-August Universität Göttingen",
+      "web_page": "http://www.uni-goettingen.de/"
+    },
+    {
+      "atc": "TR",
+      "country": "Turkey",
+      "name": "Balikesir University",
+      "web_page": "http://www.balikesir.edu.tr/"
+    },
+    {
+      "atc": "PK",
+      "country": "Pakistan",
+      "name": "Institute of Industrial Electronics Engineering",
+      "web_page": "http://www.iiee.edu.pk/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Nashville State Community College",
+      "web_page": "http://www.nscc.edu/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Johnson C. Smith University",
+      "web_page": "http://www.jcsu.edu/"
+    },
+    {
+      "atc": "PE",
+      "country": "Peru",
+      "name": "Universidad Nacional de La Libertad, Trujillo",
+      "web_page": "http://www.unitru.edu.pe/"
+    },
+    {
+      "atc": "AR",
+      "country": "Argentina",
+      "name": "Instituto Universitario Aeronáutico",
+      "web_page": "http://www.iua.edu.ar/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "United States Air Force Academy",
+      "web_page": "http://www.usafa.edu/"
+    },
+    {
+      "atc": "BA",
+      "country": "Bosnia and Herzegovina",
+      "name": "University of East Srarajevo",
+      "web_page": "http://www.unssa.rs.ba/"
+    },
+    {
+      "atc": "MY",
+      "country": "Malaysia",
+      "name": "Swinburne University of Technology, Sarawak Campus",
+      "web_page": "http://www.swinburne.edu.my/"
+    },
+    {
+      "atc": "FI",
+      "country": "Finland",
+      "name": "Oulu Polytechnic",
+      "web_page": "http://www.oamk.fi/"
+    },
+    {
+      "atc": "CL",
+      "country": "Chile",
+      "name": "Universidad La Republica",
+      "web_page": "http://www.ulare.cl/"
+    },
+    {
+      "atc": "MX",
+      "country": "Mexico",
+      "name": "Universidad Tecnológica de México",
+      "web_page": "http://www.unitec.mx/"
+    },
+    {
+      "atc": "ES",
+      "country": "Spain",
+      "name": "Universidad de La Laguna",
+      "web_page": "http://www.ull.es/"
+    },
+    {
+      "atc": "SV",
+      "country": "El Salvador",
+      "name": "Universidad Técnica Latinoamericana",
+      "web_page": "http://www.utla.edu.sv/"
+    },
+    {
+      "atc": "PL",
+      "country": "Poland",
+      "name": "Agricultural University of Lublin",
+      "web_page": "http://www.ar.lublin.pl/"
+    },
+    {
+      "atc": "CH",
+      "country": "Switzerland",
+      "name": "Swiss Management Center",
+      "web_page": "http://www.swissmc.ch/"
+    },
+    {
+      "atc": "FI",
+      "country": "Finland",
+      "name": "Diaconia University of Applied Sciences",
+      "web_page": "http://www.diak.fi/"
+    },
+    {
+      "atc": "NL",
+      "country": "Netherlands",
+      "name": "Erasmus University Rotterdam",
+      "web_page": "http://www.eur.nl/"
+    },
+    {
+      "atc": "BY",
+      "country": "Belarus",
+      "name": "Gomel State Technical University Pavel Sukhoi",
+      "web_page": "http://www.gstu.gomel.by/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Millikin University",
+      "web_page": "http://www.millikin.edu/"
+    },
+    {
+      "atc": "RU",
+      "country": "Russian Federation",
+      "name": "Moscow State Institute of International Relations MFA Russia (MGIMO-University)",
+      "web_page": "http://www.mgimo.ru/"
+    },
+    {
+      "atc": "CR",
+      "country": "Costa Rica",
+      "name": "Universidad Internacional de las Américas",
+      "web_page": "http://www.uia.ac.cr/"
+    },
+    {
+      "atc": "CO",
+      "country": "Colombia",
+      "name": "Escuela Superiore de Administración Pública",
+      "web_page": "http://www.esap.edu.co/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Polytechnic University of New York",
+      "web_page": "http://www.poly.edu/"
+    },
+    {
+      "atc": "CN",
+      "country": "China",
+      "name": "Nanjing Normal University",
+      "web_page": "http://www.njnu.edu.cn/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Ibaraki University",
+      "web_page": "http://www.ibaraki.ac.jp/"
+    },
+    {
+      "atc": "SO",
+      "country": "Somalia",
+      "name": "University of Somalia",
+      "web_page": "http://www.universityofsomalia.net/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "University of Montana",
+      "web_page": "http://www.umt.edu/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Bidhan Chandra Agricultural University",
+      "web_page": "http://www.bckv.edu.in/"
+    },
+    {
+      "atc": "CR",
+      "country": "Costa Rica",
+      "name": "Universidad Veritas",
+      "web_page": "http://www.uveritas.ac.cr/"
+    },
+    {
+      "atc": "BE",
+      "country": "Belgium",
+      "name": "Faculté Polytechnique de Mons",
+      "web_page": "http://www.fpms.ac.be/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Indian Institute of Technology, Hyderabad",
+      "web_page": "http://www.iith.ac.in/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Aikoku Gakuen University",
+      "web_page": "http://www.aikoku-u.ac.jp/"
+    },
+    {
+      "atc": "TH",
+      "country": "Thailand",
+      "name": "Mahidol University International College",
+      "web_page": "http://www.muic.mahidol.ac.th/"
+    },
+    {
+      "atc": "TZ",
+      "country": "Tanzania, United Republic of",
+      "name": "Sokoine University of Agriculture",
+      "web_page": "http://www.suanet.ac.tz/"
+    },
+    {
+      "atc": "RU",
+      "country": "Russian Federation",
+      "name": "Marij State University",
+      "web_page": "http://margu.mari.ru/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Westminster College",
+      "web_page": "http://www.westminster-mo.edu/"
+    },
+    {
+      "atc": "MZ",
+      "country": "Mozambique",
+      "name": "Instituto Superior de Relações Internacionais (ISRI)",
+      "web_page": "http://www.isri.ac.mz/"
+    },
+    {
+      "atc": "BO",
+      "country": "Bolivia, Plurinational State of",
+      "name": "Universidad Autónoma del Beni &quot;José Ballivián&quot;",
+      "web_page": "http://www.uabjb.edu.bo/"
+    },
+    {
+      "atc": "MY",
+      "country": "Malaysia",
+      "name": "Baitulmal Management Institute (IPB)",
+      "web_page": "http://www.ipb.edu.my/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Minnesota State University, Mankato",
+      "web_page": "http://www.mnsu.edu/"
+    },
+    {
+      "atc": "EE",
+      "country": "Estonia",
+      "name": "Estonian Academy of Security Sciences",
+      "web_page": "http://www.sisekaitse.ee/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Meiji University of Oriental Medicine",
+      "web_page": "http://www.meiji-u.ac.jp/"
+    },
+    {
+      "atc": "PR",
+      "country": "Puerto Rico",
+      "name": "Universidad Politecnica de Puerto Rico",
+      "web_page": "http://www.pupr.edu/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Maharishi University of Management",
+      "web_page": "http://www.mum.edu/"
+    },
+    {
+      "atc": "BE",
+      "country": "Belgium",
+      "name": "Karel De Grote Hogeschool",
+      "web_page": "http://www.kdg.be/"
+    },
+    {
+      "atc": "AE",
+      "country": "United Arab Emirates",
+      "name": "Khalifa University of Science, Technology and Research",
+      "web_page": "http://www.ku.ac.ae/"
+    },
+    {
+      "atc": "MX",
+      "country": "Mexico",
+      "name": "Universidad Autónoma de Ciudad Juárez",
+      "web_page": "http://www.uacj.mx/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Tohoku University",
+      "web_page": "http://www.tohoku.ac.jp/"
+    },
+    {
+      "atc": "CN",
+      "country": "China",
+      "name": "Nanjing Medical University",
+      "web_page": "http://www.njmu.edu.cn/"
+    },
+    {
+      "atc": "MM",
+      "country": "Myanmar",
+      "name": "Technological University (Pakokku)",
+      "web_page": "http://www.most.gov.mm/pakokkutu/"
+    },
+    {
+      "atc": "KR",
+      "country": "Korea, Republic of",
+      "name": "Inchon National University of Education",
+      "web_page": "http://www.inchon-e.ac.kr/"
+    },
+    {
+      "atc": "VN",
+      "country": "Viet Nam",
+      "name": "Hue University",
+      "web_page": "http://www.hueuni.edu.vn/"
+    },
+    {
+      "atc": "UA",
+      "country": "Ukraine",
+      "name": "Chernivci National University",
+      "web_page": "http://www.chnu.cv.ua/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Lakshmibai National Institute of Physical Education",
+      "web_page": "http://www.lnipe.edu/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Graduate University for Advanced Studies",
+      "web_page": "http://www.soken.ac.jp/"
+    },
+    {
+      "atc": "FR",
+      "country": "France",
+      "name": "Université Rennes I",
+      "web_page": "http://www.univ-rennes1.fr/"
+    },
+    {
+      "atc": "RU",
+      "country": "Russian Federation",
+      "name": "Ufa State Petroleum Technological University",
+      "web_page": "http://www.rusoil.net/"
+    },
+    {
+      "atc": "CR",
+      "country": "Costa Rica",
+      "name": "Universidad de La Salle",
+      "web_page": "http://www.ulasalle.ac.cr/"
+    },
+    {
+      "atc": "MX",
+      "country": "Mexico",
+      "name": "Universidad del Valle del Bravo",
+      "web_page": "http://www.uvb.edu.mx/"
+    },
+    {
+      "atc": "KR",
+      "country": "Korea, Republic of",
+      "name": "Sang Myung University",
+      "web_page": "http://www.sangmyung.ac.kr/"
+    },
+    {
+      "atc": "DK",
+      "country": "Denmark",
+      "name": "Odense University",
+      "web_page": "http://www.ou.dk/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name":"Nara Womens University",
+      "web_page": "http://www.nara-wu.ac.jp/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Devi Ahilya University of Indore",
+      "web_page": "http://www.davv.ac.in/"
+    },
+    {
+      "atc": "NG",
+      "country": "Nigeria",
+      "name": "Veritas University",
+      "web_page": "http://www.veritas.edu.ng/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Arizona State University",
+      "web_page": "http://www.asu.edu/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Northeastern University",
+      "web_page": "http://www.northeastern.edu/"
+    },
+    {
+      "atc": "IT",
+      "country": "Italy",
+      "name": "Pontificio Ateneo Antonianum",
+      "web_page": "http://www.antonianum.ofm.org/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Chapman University",
+      "web_page": "http://www.chapman.edu/"
+    },
+    {
+      "atc": "GE",
+      "country": "Georgia",
+      "name": "Tbilisi State University",
+      "web_page": "http://www.tsu.edu.ge/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Shimane University",
+      "web_page": "http://www.shimane-u.ac.jp/"
+    },
+    {
+      "atc": "JP",
+      "country": "Japan",
+      "name": "Wakayama University",
+      "web_page": "http://www.wakayama-u.ac.jp/"
+    },
+    {
+      "atc": "FR",
+      "country": "France",
+      "name": "Ecole Nationale Supérieure de Chimie de Lille",
+      "web_page": "http://www.ensc-lille.fr/"
+    },
+    {
+      "atc": "CN",
+      "country": "China",
+      "name": "Xuzhou Normal University",
+      "web_page": "http://www.xznu.edu.cn/"
+    },
+    {
+      "atc": "JM",
+      "country": "Jamaica",
+      "name": "University of Technology Jamaica",
+      "web_page": "http://www.utech.edu.jm/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Bowdoin College",
+      "web_page": "http://www.bowdoin.edu/"
+    },
+    {
+      "atc": "IR",
+      "country": "Iran, Islamic Republic of",
+      "name": "Islamic Azad University, North Tehran",
+      "web_page": "http://www.iau-tnb.ac.ir/"
+    },
+    {
+      "atc": "TW",
+      "country": "Taiwan, Province of China",
+      "name": "Nanhua University",
+      "web_page": "http://www.nhu.edu.tw/"
+    },
+    {
+      "atc": "PE",
+      "country": "Peru",
+      "name": "Universidad Privada San Pedro",
+      "web_page": "http://www.usanpedro.edu.pe/"
+    },
+    {
+      "atc": "RU",
+      "country": "Russian Federation",
+      "name": "St. Petersburg State University of Information Technologies, Mechanics and Optics",
+      "web_page": "http://www.ifmo.ru/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Lewis University",
+      "web_page": "http://www.lewisu.edu/"
+    },
+    {
+      "atc": "BR",
+      "country": "Brazil",
+      "name": "Universidade Federal do Maranhão",
+      "web_page": "http://www.ufma.br/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Indian University",
+      "web_page": "http://www.iur.ac.in/"
+    },
+    {
+      "atc": "PK",
+      "country": "Pakistan",
+      "name": "The Global College Lahore",
+      "web_page": "http://www.global.edu.pk/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Chadron State College",
+      "web_page": "http://www.csc.edu/"
+    },
+    {
+      "atc": "ID",
+      "country": "Indonesia",
+      "name": "Universitas Bhayangkara Jakarta Raya",
+      "web_page": "http://www.ubharajaya.ac.id/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "Illinois Benedictine College",
+      "web_page": "http://www.ibc.edu/"
+    },
+    {
+      "atc": "PA",
+      "country": "Panama",
+      "name": "Universidad Latina de Panamá",
+      "web_page": "http://www.ulat.ac.pa/"
+    },
+    {
+      "atc": "MX",
+      "country": "Mexico",
+      "name": "Universidad Lasallista Benavente",
+      "web_page": "http://www.ulsab.edu.mx/"
+    },
+    {
+      "atc": "MX",
+      "country": "Mexico",
+      "name": "Instituto Tecnologico de Durango",
+      "web_page": "http://www.itdurango.edu.mx/"
+    },
+    {
+      "atc": "ID",
+      "country": "Indonesia",
+      "name": "Universitas Negeri Malang",
+      "web_page": "http://www.malang.ac.id/"
+    },
+    {
+      "atc": "IN",
+      "country": "India",
+      "name": "Indian Institute of Technology, Kanpur",
+      "web_page": "http://www.iitk.ac.in/"
+    },
+    {
+      "atc": "IT",
+      "country": "Italy",
+      "name": "Dutch University Institute for Art History (DUIA)",
+      "web_page": "http://www.iuoart.org/"
+    },
+    {
+      "atc": "BR",
+      "country": "Brazil",
+      "name": "Universidade Católica de Goiás",
+      "web_page": "http://www.ucg.br/"
+    },
+    {
+      "atc": "CO",
+      "country": "Colombia",
+      "name": "Universidad Católica de Colombia",
+      "web_page": "http://www.ucatolica.edu.co/"
+    },
+    {
+      "atc": "PR",
+      "country": "Puerto Rico",
+      "name": "Universidad de Puerto Rico, Humacao",
+      "web_page": "http://cuhwww.upr.clu.edu/"
+    },
+    {
+      "atc": "CO",
+      "country": "Colombia",
+      "name": "Universidad CES",
+      "web_page": "http://www.ces.edu.co/"
+    },
+    {
+      "atc": "PL",
+      "country": "Poland",
+      "name": "Pedagogical University of Zielona Gora",
+      "web_page": "http://www.wsp.zgora.pl/"
+    },
+    {
+      "atc": "US",
+      "country": "United States",
+      "name": "South Dakota State University",
+      "web_page": "http://www.sdstate.edu/"
+    }
+  ]
+}
