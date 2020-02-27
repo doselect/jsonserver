@@ -8,7 +8,7 @@
     "json-server": "https://github.com/doselect/json-server.git",
     "netlify-lambda": "^1.6.3",
     "request": "^2.88.2",
-    "serverless-http": "1.8.0"
+    "serverless-http": "2.3.2"
   },
   "devDependencies": {
     "countrycitystatejson": "^0.2.15",
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "netlify-lambda build express",
     "start": "node server-local.js",
-    "serve": "netlify-lambda serve data",
+    "serve": "netlify-lambda serve public",
     "seed": "node seed.js"
   },
   "repository": {

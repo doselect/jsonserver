@@ -1,6 +1,7 @@
 [build]
   command = "npm install && npm run build"
   functions = "json"
+  publish = "public"
 
 [[redirects]]
   from = "/api/*"
