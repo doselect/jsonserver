@@ -1,10 +1,9 @@
 [build]
   command = "npm install && npm run build"
   functions = "json"
-  publish = "public"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/json/:splat"
+  to = "https://jsonmock.doselect.com/.netlify/functions/json/:splat"
   status = 200
   force = true
