@@ -1,0 +1,34 @@
+{
+    "notes": [
+        {
+            "id": 1,
+            "title": "Send letters to John",
+            "description": "Buy christmas greeting card for John from the corner shop"
+        },
+        {
+            "id": 12,
+            "title": "Plan for next trip",
+            "description": "Shortlisted places that we can visit for the holidays Vatican, great barrier reef, grand canyon"
+        },
+        {
+            "id": 13,
+            "title": "Doctor's note",
+            "description": "Eat the blue pill before breakfast and the red pill after dinner"
+        },
+        {
+            "id": 14,
+            "title": "Adam's train schedules",
+            "description": "Adam's train arrives at 6:00 am, wake up at 5:00 am to get ready with everything"
+        },
+        {
+            "id": 15,
+            "title": "Car repairs",
+            "description": "Tune the front brakes they are not tight, and have the oil changed"
+        },
+        {
+            "id": 16,
+            "title": "Expenses",
+            "description": "Deposit $2000 for Randy's tution, and pay the life insurance premium before 21st of each month"
+        }
+    ]
+}
