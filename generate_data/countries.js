@@ -46,11 +46,7 @@ const getCountriesFlag = (countries) => {
 
 const sanitizeCities = (cities) => {
   return _.map(cities, (city) => {
-    const state_id = _.get(city, 'state_id')
-    const city_id = _.get(city, 'id')
-    _.set(city, 'id', _.parseInt(city_id))
-    _.set(city, 'state_id', _.parseInt(state_id))
-    return city;
+    return _.get(city, 'name');
   })
 }
 
@@ -75,10 +71,19 @@ const getCountriesMoreDetails = (countries) => {
   return _.map(countries, (country) => {
     const shortName = _.get(country, 'alpha2Code');
     const emoji = _.get(countrycitystate.getCountryByShort(shortName), 'emoji')
-    const phone = _.get(countrycitystate.getCountryByShort(shortName), 'phone')
     _.set(country, 'emoji', emoji)
-    _.set(country, 'phone', phone)
     return _.sortKeysBy(country);
+  })
+}
+
+
+const sanitizeCountries = (countries) => {
+  return _.map(countries, (country) => {
+    const newCountry = _.omit(country, ["alpha3Code", "altSpellings", "cioc", "demonym", "regionalBlocs", "translations", "gini"]);
+    _.set(newCountry, 'languages', _.map(_.get(newCountry, 'languages'), (language) => {
+      return _.get(language, 'name');
+    }))
+    return _.sortKeysBy(newCountry);
   })
 }
 
@@ -87,8 +92,9 @@ request('https://restcountries.eu/rest/v2/all', { json: true }, (err, res, body)
   const countriesWithId = addCountriesId(body);
   const countriesWithFlag = getCountriesFlag(countriesWithId);
   const countriesWithStates = getCountriesWithStates(countriesWithFlag);
-  const countries = getCountriesMoreDetails(countriesWithStates);
-  fs.writeFileSync(path.join(__dirname, '../data/countries.json'), beautify(_.orderBy(countries, ['id']), null, 2, 80), 'utf8');
+  const countries = { "countries": _.orderBy(sanitizeCountries(getCountriesMoreDetails(countriesWithStates)), ['id']) };
+  
+  fs.writeFileSync(path.join(__dirname, '../data/countries.json'), beautify(countries, null, 2, 80), 'utf8');
 });
 
 
