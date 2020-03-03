@@ -70,4 +70,4 @@ _.times(500, () => {
   employees.push(employee)
 })
 
-fs.writeFileSync(path.join(__dirname, '../data/employees.json'), beautify(_.orderBy(employees, ['id']), null, 2, 80), 'utf8');
+fs.writeFileSync(path.join(__dirname, '../data/employees.json'), beautify({"employees": _.orderBy(employees, ['id'])}, null, 2, 80), 'utf8');

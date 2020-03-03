@@ -2,8 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const beautify = require("json-beautify");
 
-const notes = {
-  "notes": [
+const notes = [
     {
       "id": 1,
       "title": "Learn node.js",
@@ -54,7 +53,6 @@ const notes = {
       "title": "Expenses",
       "description": "Deposit $2000 for Randy's tution, and pay the life insurance premium before 21st of each month"
     }
-  ]
-}
+]
 
-fs.writeFileSync(path.join(__dirname, '../data/notes.json'), beautify(notes, null, 2, 80), 'utf8');
+fs.writeFileSync(path.join(__dirname, '../data/notes.json'), beautify({ notes }, null, 2, 80), 'utf8');
