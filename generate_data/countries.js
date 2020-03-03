@@ -79,7 +79,7 @@ const getCountriesMoreDetails = (countries) => {
 
 const sanitizeCountries = (countries) => {
   return _.map(countries, (country) => {
-    const newCountry = _.omit(country, ["alpha3Code", "altSpellings", "cioc", "demonym", "regionalBlocs", "translations", "gini"]);
+    const newCountry = _.omit(country, ["altSpellings", "cioc", "demonym", "regionalBlocs", "translations", "gini", "numericCode", "nativeName"]);
     _.set(newCountry, 'languages', _.map(_.get(newCountry, 'languages'), (language) => {
       return _.get(language, 'name');
     }))
