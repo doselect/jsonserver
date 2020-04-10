@@ -1,0 +1,39 @@
+{
+    "flights": [
+      {
+        "id": 1,
+        "flight_name": "Air India",
+        "destination": "Mumbai",
+        "departure": "2020-3-1",
+        "travel_time": "7h 45m"
+      },
+      {
+        "id": 2,
+        "flight_name": "IndiGo",
+        "destination": "New Delhi",
+        "departure": "2020-3-3",
+        "travel_time": "6h"
+      },
+      {
+        "id": 3,
+        "flight_name": "SpiceJet",
+        "departure": "2020-3-12",
+        "destination": "Bangalore",
+        "travel_time": "5h 30m"
+      },
+      {
+        "id": 4,
+        "flight_name": "Emirates",
+        "destination": "kolkata",
+        "departure": "2020-3-13",
+        "travel_time": "6h 30m"
+      },
+      {
+        "id": 5,
+        "flight_name": "Qatar",
+        "destination": "Chennai",
+        "departure": "2020-3-23",
+        "travel_time": "5h"
+      }
+    ]
+}
