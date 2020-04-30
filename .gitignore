@@ -1,3 +1,8 @@
 node_modules/
 functions
 json
+
+# Serverless directories
+.serverless
+
+jspm_packages

@@ -1,0 +1,36 @@
+{
+  "name": "jserver",
+  "version": "1.0.0",
+  "description": "DoSelect Json Server",
+  "main": "functions/server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "json-server": "https://github.com/doselect/json-server.git",
+    "request": "^2.88.2",
+    "serverless-http": "2.3.2"
+  },
+  "devDependencies": {
+    "faker": "^4.1.0",
+    "image-downloader": "^3.5.0",
+    "json-beautify": "^1.1.1",
+    "lodash": "^4.17.15",
+    "rosie": "^2.0.1",
+    "serverless-offline": "^6.1.4",
+    "serverless-plugin-warmup": "^4.9.0"
+  },
+  "scripts": {
+    "start": "node server-local.js",
+    "seed": "node seed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doselect/jsonserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doselect/jsonserver/issues"
+  },
+  "homepage": "https://github.com/doselect/jsonserver#readme"
+}
