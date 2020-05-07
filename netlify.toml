@@ -1,5 +1,5 @@
 [build]
-  command = "rm -rf ../cache/node_modules && npm install -no-cache && npm run build"
+  command = "rm -rf ../cache/node_modules && npm install -no-cache && npm run build && ls -a ./ && cat ./node_modules/json-server/lib/server/defaults.js"
   functions = "json"
 
 [[redirects]]
