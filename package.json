@@ -4,7 +4,7 @@
   "description": "DoSelect Json Server",
   "main": "functions/server.js",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "json-server": "https://github.com/doselect/json-server.git",
     "netlify-lambda": "^1.6.3",
     "request": "^2.88.2",
