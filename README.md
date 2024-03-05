@@ -9,4 +9,4 @@
 
 ## Health Check
 
-Get request to `/health` will return `{ "status": "UP" }` with a `200` status code
+Get request to `/health` will return `{ "status": "Ok" }` with a `200` status code

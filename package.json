@@ -5,7 +5,6 @@
   "main": "functions/server.js",
   "dependencies": {
     "express": "^4.17.1",
-    "express-actuator": "^1.8.4",
     "json-server": "^0.17.4",
     "request": "^2.88.2",
     "serverless-http": "^3.2.0"

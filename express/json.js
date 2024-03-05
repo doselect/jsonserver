@@ -5,10 +5,8 @@ const jsonServer = require("json-server");
 const request = require("request");
 const middlewares = jsonServer.defaults();
 const app = jsonServer.create();
-const actuator = require('express-actuator')
 
 app.use(middlewares);
-app.use(actuator())
 
 // Route to be hit by default
 app.use("/api/:fileName/:splat?", (req, res, next) => {
@@ -47,6 +45,20 @@ app.use("/json/:fileName/", (req, res, next) => {
     }
     const jsonrouter = jsonServer.router(body);
     jsonrouter(req, res, next);
+  });
+});
+
+// Health Check
+app.use("/health", (req, res, next) => {
+  const opts = {
+    url: `https://raw.githubusercontent.com/doselect/jsonserver/master/data/health_check.txt`,
+    json: true,
+  };
+  request(opts, function (error, response, body) {
+    if (error) {
+      return res.status(503).send({ error });
+    }
+    return res.status(200).send({ status: "Ok" });
   });
 });
 
