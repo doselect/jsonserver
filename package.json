@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "node server-local.js",
-    "dev" : "nodemon server-local.js",
+    "dev": "nodemon server-local.js",
     "seed": "node seed.js"
   },
   "repository": {
