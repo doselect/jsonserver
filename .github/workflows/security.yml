@@ -1,0 +1,14 @@
+name: Central Security Scan
+
+on:
+  push:
+    branches:
+      - stable
+  pull_request: 
+    branches:
+      - stable
+
+jobs:
+  scan:
+    uses: doselect/org-security-workflows/.github/workflows/security-scan.yml@master
+    secrets: inherit
