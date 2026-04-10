@@ -3,10 +3,10 @@ name: Central Security Scan
 on:
   push:
     branches:
-      - stable
+      - master
   pull_request: 
     branches:
-      - stable
+      - master
 
 jobs:
   scan:
