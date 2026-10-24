@@ -5,6 +5,8 @@ const jsonServer = require("json-server");
 const middlewares = jsonServer.defaults();
 const app = jsonServer.create();
 
+app.disable("x-powered-by");
+
 const DATA_DIR = path.join(__dirname, "../data");
 // Only files that exist in the data folder can be served
 const DATA_FILES = new Set(
@@ -15,11 +17,19 @@ const DATA_FILES = new Set(
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const cache = new Map();
 
+// json-server's router sends the error stack trace to the client, so its error
+// handler is removed and errors go to the app's error handler below
+const createRouter = (data) => {
+  const router = jsonServer.router(data);
+  router.stack = router.stack.filter((layer) => layer.handle.length !== 4);
+  return router;
+};
+
 // Parsing the file and building its router once, then reusing them for reads
 const loadData = (fileName) => {
   if (!cache.has(fileName)) {
     const data = JSON.parse(fs.readFileSync(path.join(DATA_DIR, `${fileName}.json`), "utf8"));
-    cache.set(fileName, { data, router: jsonServer.router(structuredClone(data)) });
+    cache.set(fileName, { data, router: createRouter(structuredClone(data)) });
   }
   return cache.get(fileName);
 };
@@ -41,7 +51,7 @@ const serveData = (fileName, req, res, next) => {
 
   const router = READ_METHODS.has(req.method)
     ? entry.router
-    : jsonServer.router(structuredClone(entry.data));
+    : createRouter(structuredClone(entry.data));
   router(req, res, next);
 };
 
@@ -67,6 +77,13 @@ app.use("/json/:fileName", (req, res, next) => {
 // Health Check
 app.use("/health", (req, res, next) => {
   return res.status(200).send({ status: "Ok" });
+});
+
+// Errors are logged on the server, clients only get a short message without the stack trace
+app.use((err, req, res, next) => {
+  console.error(err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).send({ error: status < 500 ? "Invalid request" : "Something went wrong" });
 });
 
 // App to run as node server

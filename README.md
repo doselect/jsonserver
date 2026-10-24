@@ -14,6 +14,10 @@
 - Set `PORT` to change the local port (default 8888).
 - Requires Node.js 24 LTS (24.22.1 or newer 24.x, see .nvmrc).
 
+## Testing
+- [QA_GUIDE.md](QA_GUIDE.md): test flows, expected results and acceptance criteria.
+- [postman/README.md](postman/README.md): how to run the Postman collection in the app or with Newman.
+
 ## Health Check
 
 Get request to `/health` will return `{ "status": "Ok" }` with a `200` status code
