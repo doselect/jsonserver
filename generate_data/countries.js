@@ -1,4 +1,3 @@
-const request = require('request');
 const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
@@ -29,7 +28,8 @@ const addCountriesId = (countries) => {
 // Downloading countries flag to /assets/flags
 const getCountriesFlag = (countries) => {
  return _.map(countries, (country) => {
-   const flagFileName = _.replace(_.get(country, 'flag'), 'https://restcountries.eu/data/', '');
+   // basename keeps a hostile flag URL from writing outside assets/flags
+   const flagFileName = path.basename(_.replace(_.get(country, 'flag'), 'https://restcountries.eu/data/', ''));
     const newFlagUrl = `https://raw.githubusercontent.com/doselect/jsonserver/master/assets/flags/${flagFileName}`
     imageDownload.image({
       url: _.get(country, 'flag'),
@@ -82,13 +82,12 @@ const getCountriesMoreDetails = (countries) => {
   })
 }
 
-request('https://restcountries.eu/rest/v2/all', { json: true }, (err, res, body) => {
-  if (err) { return console.log(err); }
+fetch('https://restcountries.eu/rest/v2/all').then((res) => res.json()).then((body) => {
   const countriesWithId = addCountriesId(body);
   const countriesWithFlag = getCountriesFlag(countriesWithId);
   const countriesWithStates = getCountriesWithStates(countriesWithFlag);
   const countries = getCountriesMoreDetails(countriesWithStates);
   fs.writeFileSync(path.join(__dirname, '../data/countries.json'), beautify(_.orderBy(countries, ['id']), null, 2, 80), 'utf8');
-});
+}).catch((err) => console.log(err));
 
 

@@ -1,2 +1,2 @@
-const app = require('./express/json');
-app.listen(8888);
+const app = require('./src/app');
+app.listen(process.env.PORT || 8888);

@@ -1,4 +1,4 @@
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const _ = require('lodash');
 const {Factory} = require('rosie');
 const path = require('path');
@@ -8,21 +8,21 @@ const employees = [];
 
 Factory.define('employees')
   .sequence('id')
-  .attr('firstName', () => { return faker.name.firstName(); })
-  .attr('lastName', () => { return faker.name.lastName(); })
+  .attr('firstName', () => { return faker.person.firstName(); })
+  .attr('lastName', () => { return faker.person.lastName(); })
   .attr('fullName', ['firstName', 'lastName'], (firstName, lastName) => { return `${firstName} ${lastName}` })
   .attr('bloodGroup', () => {
     const bloodGroups = ['A+', 'O+', 'B+', 'AB+', 'A-', 'O-', 'B-', 'AB-'];
     return _.sample(bloodGroups)
   })
   .attr('dateOfBirth', () => {
-    return faker.date.between('1975-01-01', '1985-12-31');
+    return faker.date.between({ from: '1975-01-01', to: '1985-12-31' });
   })
   .attr('companyName', () => {
-    return faker.company.companyName();
+    return faker.company.name();
   })
   .attr('dateOfJoining', () => {
-    return faker.date.between('2011-01-01', '2015-12-31');
+    return faker.date.between({ from: '2011-01-01', to: '2015-12-31' });
   })
   .attr('designation', () => {
     const designations = ['Trainee Engineer',
@@ -53,12 +53,12 @@ Factory.define('employees')
   })
   .attr('address', () => {
     const address = {
-      "streetAddress": `${faker.address.streetAddress()}`,
-      "streetName": `${faker.address.streetName()}`,
-      "city": `${faker.address.city()}`,
-      "state": `${faker.address.state()}`,
-      "country": `${faker.address.country()}`,
-      "zipcode": `${faker.address.zipCode()}`
+      "streetAddress": `${faker.location.streetAddress()}`,
+      "streetName": `${faker.location.street()}`,
+      "city": `${faker.location.city()}`,
+      "state": `${faker.location.state()}`,
+      "country": `${faker.location.country()}`,
+      "zipcode": `${faker.location.zipCode()}`
     }
 
     return address;

@@ -1,5 +1,5 @@
 const path = require('path');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const _ = require('lodash');
 const fs = require('fs');
 const beautify = require("json-beautify");
@@ -8,14 +8,15 @@ const leaves = [];
 
 Factory.define('leaves')
     .sequence('id')
-    .attr('name', () => { return faker.name.firstName(); })
+    .attr('name', () => { return faker.person.firstName(); })
     .attr('startDate', () => {
         const start = new Date();
         const end = new Date();
         end.setDate(start.getDate() + 2);
-        const date = faker.date.between(
-            start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate(),
-            end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate());
+        const date = faker.date.between({
+            from: start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate(),
+            to: end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate()
+        });
         return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
     })
     .attr('endDate', () => {
@@ -23,9 +24,10 @@ Factory.define('leaves')
         start.setDate(start.getDate() + 3);
         const end = new Date();
         end.setDate(start.getDate() + 4);
-        const date = faker.date.between(
-            start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate(),
-            end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate());
+        const date = faker.date.between({
+            from: start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate(),
+            to: end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate()
+        });
         return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
     });
 
