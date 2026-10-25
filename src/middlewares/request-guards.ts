@@ -3,7 +3,7 @@
 //   - `<field>_like` values compiled as a RegExp (a crafted one blocks the server) -> escaped, capped at MAX_LIKE_LENGTH
 //   - `?callback=` turning the answer into JSONP (script inclusion from any site) -> dropped
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
-import rootLogger from '../logger.ts'
+import rootLogger from '../logging/logger.ts'
 import { escapeRegExp } from '../utils/http.ts'
 import { JSONP_CALLBACK_PARAM, LIKE_SUFFIX, MAX_BODY_BYTES, MAX_LIKE_LENGTH } from '../constants/http.ts'
 

@@ -37,11 +37,11 @@ Requires Node.js 24 LTS (24.22.1 or newer 24.x, see .nvmrc).
 |---|---|
 | `src/index.ts` | Entry point: config check, HTTP server, graceful shutdown on SIGTERM |
 | `src/app.ts` | The Express app (json-server's Express 4) and its middleware order |
-| `src/config.ts` | Every setting, read from the environment |
+| `src/config/index.ts` | Every setting, read from the environment |
 | `src/routes/` | `data.ts` (`/api`, `/json`) and `health.ts` (`/`, `/health`) |
 | `src/services/data-store.ts` | The data files, loaded once and kept in memory |
 | `src/middlewares/` | Request id and access log, request guards |
-| `src/logger.ts`, `src/daily-file-transport.ts` | JSON logger and the daily rotated `application.log` |
+| `src/logging/` | `logger.ts` (JSON logger) and `daily-file-transport.ts` (the daily rotated `application.log`) |
 | `src/constants/`, `src/utils/` | Shared values and helpers |
 | `dev/` | Data generators (not deployed code) |
 | `test/` | vitest suites |

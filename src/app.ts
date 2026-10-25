@@ -2,8 +2,8 @@
 // health, and JSON answers for unknown paths and errors
 import jsonServer from 'json-server'
 import type { Express, NextFunction, Request, Response } from 'express'
-import config from './config.ts'
-import rootLogger from './logger.ts'
+import config from './config/index.ts'
+import rootLogger from './logging/logger.ts'
 import { endpoint } from './utils/http.ts'
 import { errorStatus } from './utils/errors.ts'
 import requestContext from './middlewares/request-context.ts'

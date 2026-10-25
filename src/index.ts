@@ -2,8 +2,8 @@
 // SIGTERM/SIGINT stops taking connections and lets in-flight requests finish before exiting
 import http from 'node:http'
 import type { Socket } from 'node:net'
-import config, { ConfigError } from './config.ts'
-import rootLogger, { flushLogs, logFileError } from './logger.ts'
+import config, { ConfigError } from './config/index.ts'
+import rootLogger, { flushLogs, logFileError } from './logging/logger.ts'
 import createApp, { type JsonServerApp } from './app.ts'
 import { HEADERS_TIMEOUT_MS, KEEP_ALIVE_TIMEOUT_MS, MAX_BODY_BYTES, MAX_LIKE_LENGTH } from './constants/http.ts'
 import { EXIT_FLUSH_TIMEOUT_MS } from './constants/lifecycle.ts'

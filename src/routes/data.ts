@@ -1,7 +1,7 @@
 // /api/<file>/... (the default) and /json/<file>/... (kept for older clients): answers from data/<file>.json.
 // `/api/notes/1` and `/api/notes/notes/1` both reach the `notes` resource; `/json` needs the resource in the URL
 import express, { type NextFunction, type Request, type Response, type Router } from 'express'
-import rootLogger from '../logger.ts'
+import rootLogger from '../logging/logger.ts'
 import type { DataStore } from '../services/data-store.ts'
 import { API_PREFIX, JSON_PREFIX, NOT_FOUND_BODY } from '../constants/http.ts'
 

@@ -17,9 +17,9 @@ import zlib from 'node:zlib'
 import { threadId } from 'node:worker_threads'
 import { pipeline } from 'node:stream/promises'
 import TransportStream from 'winston-transport'
-import { errorCode } from './utils/errors.ts'
-import { asctime } from './utils/time.ts'
-import { DAY_MS, LOG_ROTATE_CHECK_MS } from './constants/logging.ts'
+import { errorCode } from '../utils/errors.ts'
+import { asctime } from '../utils/time.ts'
+import { DAY_MS, LOG_ROTATE_CHECK_MS } from '../constants/logging.ts'
 
 /** The formatted line winston hands to transports (triple-beam's MESSAGE symbol). */
 const MESSAGE = Symbol.for('message')

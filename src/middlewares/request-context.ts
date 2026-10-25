@@ -3,7 +3,7 @@
 import { randomUUID } from 'node:crypto'
 import { performance } from 'node:perf_hooks'
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
-import rootLogger from '../logger.ts'
+import rootLogger from '../logging/logger.ts'
 import { endpoint, remoteAddr } from '../utils/http.ts'
 import { QUIET_PATHS } from '../constants/http.ts'
 

@@ -7,7 +7,7 @@ import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import jsonServer from 'json-server'
 import type { RequestHandler } from 'express'
-import rootLogger from '../logger.ts'
+import rootLogger from '../logging/logger.ts'
 import { READ_METHODS } from '../constants/http.ts'
 
 /** Logger for this module (`data-store`). */

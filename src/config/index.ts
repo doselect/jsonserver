@@ -4,7 +4,7 @@
 //
 // Values are read once, when this module loads: tests set the environment before importing src/.
 import { fileURLToPath } from 'node:url'
-import { LOG_LEVELS, type LogLevel } from './constants/logging.ts'
+import { LOG_LEVELS, type LogLevel } from '../constants/logging.ts'
 
 /** The process environment; read only in this module. */
 const env = process.env
@@ -90,7 +90,7 @@ const config = {
    *
    * Every `<name>.json` in it is served as `/api/<name>`; tests point it at fixtures.
    */
-  dataDirectory: optional('DATA_DIRECTORY', fileURLToPath(new URL('../data', import.meta.url))),
+  dataDirectory: optional('DATA_DIRECTORY', fileURLToPath(new URL('../../data', import.meta.url))),
 
   /**
    * Logger settings, the same as eden's logger.

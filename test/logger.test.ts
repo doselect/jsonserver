@@ -1,4 +1,4 @@
-// The logger (src/logger.ts) and the DoSelect logging standard it implements: flat JSON lines with a fixed leading
+// The logger (src/logging/logger.ts) and the DoSelect logging standard it implements: flat JSON lines with a fixed leading
 // field order, error expansion (`error`, `error_type`, `error_code`, `exc_value`, and `exc_info` from ERROR up),
 // stdout and file output (a fixed application.log, rotated daily into application-YYYY-MM-DD.log.gz with retention),
 // SILENT, and the CRITICAL line plus exit code 1 on invalid config at boot.
@@ -12,17 +12,17 @@ import os from 'node:os'
 import path from 'node:path'
 import zlib from 'node:zlib'
 import { execFileSync, spawnSync } from 'node:child_process'
-import { localDay } from '../src/daily-file-transport.ts'
+import { localDay } from '../src/logging/daily-file-transport.ts'
 
 /** Repository root: the child process's working directory. */
 const ROOT = path.join(import.meta.dirname, '..')
 /** The src/ directory: where src/index.ts is run from, and the tree the style check scans. */
 const SRC = path.join(ROOT, 'src')
-/** Absolute path of src/logger.ts as a JS string literal, for interpolation into the temp script. */
-const LOGGER = JSON.stringify(path.join(SRC, 'logger.ts'))
+/** Absolute path of src/logging/logger.ts as a JS string literal, for interpolation into the temp script. */
+const LOGGER = JSON.stringify(path.join(SRC, 'logging', 'logger.ts'))
 
-/** Absolute path of src/daily-file-transport.ts as a JS string literal, for interpolation into the temp script. */
-const TRANSPORT = JSON.stringify(path.join(SRC, 'daily-file-transport.ts'))
+/** Absolute path of src/logging/daily-file-transport.ts as a JS string literal, for interpolation into the temp script. */
+const TRANSPORT = JSON.stringify(path.join(SRC, 'logging', 'daily-file-transport.ts'))
 /** One day in milliseconds, for building dates relative to today. */
 const DAY = 24 * 60 * 60 * 1000
 
@@ -454,7 +454,7 @@ it('drops lines logged after flushLogs() instead of raising write-after-end erro
 it('keeps every log call in src/ to the message and field style', () => {
   const problems: string[] = []
   const files = (fs.readdirSync(SRC, { recursive: true }) as string[])
-    .filter((f) => f.endsWith('.ts') && !f.endsWith('.d.ts') && f !== 'logger.ts')
+    .filter((f) => f.endsWith('.ts') && !f.endsWith('.d.ts') && f !== path.join('logging', 'logger.ts'))
     .map((f) => path.join(SRC, f))
   for (const file of files) {
     const source = fs.readFileSync(file, 'utf8')

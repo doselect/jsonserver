@@ -16,10 +16,10 @@ import path from 'node:path'
 import { threadId } from 'node:worker_threads'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import winston from 'winston'
-import config from './config.ts'
+import config from '../config/index.ts'
 import { DailyFileTransport } from './daily-file-transport.ts'
-import { asctime } from './utils/time.ts'
-import { LEVEL_PRIORITIES, LOG_FILE_NAME, LOG_LEVELS, ROOT_FOLDERS, STACK_TRACE_LEVELS, type LogLevel } from './constants/logging.ts'
+import { asctime } from '../utils/time.ts'
+import { LEVEL_PRIORITIES, LOG_FILE_NAME, LOG_LEVELS, ROOT_FOLDERS, STACK_TRACE_LEVELS, type LogLevel } from '../constants/logging.ts'
 
 /**
  * Extra fields for a log line: snake_case keys, plus `err` for an error.
@@ -305,7 +305,7 @@ function wrap (target: winston.Logger): Logger {
  * Root logger (module `jsonserver`); modules call `forModule(import.meta.filename)` on it instead of using it directly.
  *
  * @example
- *   import rootLogger from './logger.ts'
+ *   import rootLogger from './logging/logger.ts'
  *   const logger = rootLogger.forModule(import.meta.filename)
  *   logger.withContext({ request_id }, () => logger.info('Loaded the data file.', { data_file: 'notes' }))
  */
