@@ -3,7 +3,7 @@
 // Mirrors the flows in QA_GUIDE.md
 import { afterAll, beforeAll, describe, it } from 'vitest'
 import assert from 'node:assert/strict'
-import { request, startServer, type RunningServer } from './helpers.ts'
+import { blockedByLoadBalancer, request, startServer, type RunningServer } from './helpers.ts'
 
 let server: RunningServer
 
@@ -96,9 +96,12 @@ describe('guards', () => {
       '/.git/config', '/package.json', '/src/app.ts', '/data/notes.json', '/db'
     ]
     for (const path of paths) {
-      const res = await request(server.url + path)
+      const res = await fetch(server.url + path)
+      const text = await res.text()
+      // On a deployed environment the load balancer may reject the path before the app sees it
+      if (blockedByLoadBalancer(res)) continue
       assert.equal(res.status, 404, path)
-      assert.deepEqual(res.body, { error: 'Not found' }, path)
+      assert.deepEqual(JSON.parse(text), { error: 'Not found' }, path)
     }
   })
 

@@ -2,7 +2,7 @@
 // failure points at the row of the guide that no longer holds
 import { afterAll, beforeAll, describe, it } from 'vitest'
 import assert from 'node:assert/strict'
-import { request, startServer, type RunningServer } from './helpers.ts'
+import { blockedByLoadBalancer, request, startServer, type RunningServer } from './helpers.ts'
 
 let server: RunningServer
 
@@ -236,9 +236,11 @@ describe('flow F: errors and security', () => {
     it(`${id}: ${path} answers 404 {"error":"Not found"}`, async () => {
       const res = await fetch(server.url + path)
       const text = await res.text()
+      assertNoLeak(path, text)
+      // On a deployed environment the load balancer may reject the path before the app sees it
+      if (blockedByLoadBalancer(res)) return
       assert.equal(res.status, 404)
       assert.deepEqual(JSON.parse(text), { error: 'Not found' })
-      assertNoLeak(path, text)
     })
   }
 

@@ -89,6 +89,10 @@ On servers the playbook sets `LOG_DIRECTORY=/webapps/jsonserver/logs/` and `LOG_
   - `logger.test.ts`: log line format, levels, context, rotation, retention and failure handling
   - `server.test.ts`: `src/index.ts` from start to shutdown, and the CRITICAL exits at boot
   - `utils.test.ts`: the small helpers
+- `TARGET_URL=https://jsonserver.stg3.sg1.chsh.in npm run test:remote`: runs `qa-flows.test.ts` and `api.test.ts`
+  against a deployed environment instead of a local server. Safe on every environment, as writes are never saved.
+  There, the AWS load balancer rejects URLs with `%2F` or `%00` with its own 400 before they reach the app; the tests
+  accept that in remote runs only
 - [QA_GUIDE.md](QA_GUIDE.md): test flows, expected results and acceptance criteria.
 - [postman/README.md](postman/README.md): how to run the Postman collection in the app or with Newman.
 
