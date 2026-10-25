@@ -449,6 +449,80 @@ it('drops lines logged after flushLogs() instead of raising write-after-end erro
   }
 })
 
+it('writes DEBUG lines only at LOG_LEVEL=DEBUG, and accepts WARN as WARNING', () => {
+  const debug = parseLines(logIn({ LOG_LEVEL: 'DEBUG', LOG_STDOUT: 'true' }))
+  assert.deepEqual(debug.map((line) => line.levelname), ['INFO', 'WARNING', 'ERROR', 'DEBUG'])
+  const warn = parseLines(logIn({ LOG_LEVEL: 'WARN', LOG_STDOUT: 'true' }))
+  assert.deepEqual(warn.map((line) => line.levelname), ['WARNING', 'ERROR'])
+})
+
+it('indents lines with LOG_PRETTY=true and writes bigints as strings', () => {
+  const out = runScript(`
+    logger.info('Counted a large number.', { total: 12345678901234567890n })
+  `, { LOG_STDOUT: 'true', LOG_PRETTY: 'true' })
+  assert.match(out, /^\{\n {2}"levelname": "INFO",/)
+  const line = JSON.parse(out) as LogLine
+  assert.equal(line.total, '12345678901234567890')
+})
+
+it('merges nested contexts, lets call fields win, and keeps concurrent requests apart', () => {
+  const out = runScript(`
+    const log = logger.forModule('/app/src/routes/data.ts')
+    await Promise.all(['req-a', 'req-b'].map((request_id, i) => log.withContext({ request_id }, async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20 - i * 10))
+      log.withContext({ data_file: 'notes' }, () => log.info('Logged in a nested context.', { request_id: request_id + '-call' }))
+      log.info('Logged after an await.')
+    })))
+    log.info('Logged outside any context.')
+  `, { LOG_STDOUT: 'true' })
+  const lines = parseLines(out)
+  const after = (id: string) => lines.find((line) => line.message === 'Logged after an await.' && line.request_id === id)
+  assert.ok(after('req-a') && after('req-b'), 'each request keeps its own id across the await')
+  const nested = lines.filter((line) => line.message === 'Logged in a nested context.')
+  assert.deepEqual(nested.map((line) => line.request_id).sort(), ['req-a-call', 'req-b-call'])
+  assert.ok(nested.every((line) => line.data_file === 'notes'))
+  const outside = lines.find((line) => line.message === 'Logged outside any context.')
+  assert.equal(outside?.request_id, undefined)
+})
+
+it('names modules after the file, a folder index after its folder, and the root logger jsonserver', () => {
+  const out = runScript(`
+    logger.info('Logged by the root logger.')
+    logger.forModule('/app/src/routes/data.ts').info('Logged by a file.')
+    logger.forModule('/app/src/config/index.ts').info('Logged by a folder index.')
+    logger.forModule('/app/src/index.ts').info('Logged by the entry point.')
+    logger.forModule('/app/dist/index.js').info('Logged by the built entry point.')
+  `, { LOG_STDOUT: 'true' })
+  assert.deepEqual(parseLines(out).map((line) => line.module), ['jsonserver', 'data', 'config', 'index', 'index'])
+})
+
+it('numbers a second archive for the same day, and close() can be called twice', () => {
+  const dir = logDir()
+  const file = path.join(dir, 'application.log')
+  const yesterday = localDay(new Date(Date.now() - DAY))
+  try {
+    fs.writeFileSync(path.join(dir, `application-${yesterday}.log.gz`), zlib.gzipSync('earlier rotation\n'))
+    const { status, stderr } = runModule(dir, `
+      import { DailyFileTransport } from ${TRANSPORT}
+      const transport = new DailyFileTransport({ filename: ${JSON.stringify(file)}, retentionDays: 14 })
+      const write = (text) => new Promise((resolve) => transport.log({ [Symbol.for('message')]: text }, resolve))
+      await write('yesterday-again')
+      transport.day = ${JSON.stringify(yesterday)}
+      await write('today')
+      transport.close()
+      transport.close()
+      await transport.whenClosed
+    `)
+    assert.equal(status, 0, stderr)
+    assert.deepEqual(fs.readdirSync(dir).sort(), [`application-${yesterday}-1.log.gz`, `application-${yesterday}.log.gz`, 'application.log'])
+    assert.deepEqual(readLines(path.join(dir, `application-${yesterday}-1.log.gz`)), ['yesterday-again'])
+    assert.deepEqual(readLines(path.join(dir, `application-${yesterday}.log.gz`)), ['earlier rotation'])
+    assert.deepEqual(readLines(file), ['today'])
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 // The standard: messages are complete sentences (capital letter, final period) with no ids or values in them,
 // and extra fields are snake_case
 it('keeps every log call in src/ to the message and field style', () => {

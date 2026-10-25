@@ -81,7 +81,14 @@ On servers the playbook sets `LOG_DIRECTORY=/webapps/jsonserver/logs/` and `LOG_
 `node src/index.ts`.
 
 ## Testing
-- `npm test`: lint, type check and the vitest suites (`test/api.test.ts` follows the QA flows).
+- `npm test`: lint, type check and the vitest suites (`npx vitest run test/<file>` for one):
+  - `qa-flows.test.ts`: every step of QA_GUIDE.md flows B-G, named by step id
+  - `api.test.ts`: routes and the request guards (path tricks, `_like`, JSONP, body size)
+  - `data-store.test.ts`: which files are served, caching, broken files, writes kept private
+  - `config.test.ts`: defaults and every validation rule
+  - `logger.test.ts`: log line format, levels, context, rotation, retention and failure handling
+  - `server.test.ts`: `src/index.ts` from start to shutdown, and the CRITICAL exits at boot
+  - `utils.test.ts`: the small helpers
 - [QA_GUIDE.md](QA_GUIDE.md): test flows, expected results and acceptance criteria.
 - [postman/README.md](postman/README.md): how to run the Postman collection in the app or with Newman.
 
