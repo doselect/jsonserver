@@ -8,7 +8,7 @@ For the full test plan and acceptance criteria, see [QA_GUIDE.md](../QA_GUIDE.md
 
 | Folder | What it covers |
 |---|---|
-| Welcome Page, Health Check | The server is up: `/` and `/health` |
+| Root, Health Check | The server is up: `/` and `/health` |
 | Reusable write methods | POST, PUT, PATCH and DELETE for the dataset in the `resource` variable |
 | Dataset CRUD matrix | Write requests for each of the 9 datasets. Each subfolder sets its own `resource` |
 | Query parameter patterns | Filtering, partial match, full-text search, sorting and pagination |

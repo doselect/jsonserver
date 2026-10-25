@@ -54,7 +54,7 @@
   ],
   "item": [
     {
-      "name": "Welcome Page",
+      "name": "Root",
       "request": {
         "method": "GET",
         "header": [],
@@ -66,8 +66,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('Welcome page is served', function () {",
-              "    pm.expect(pm.response.text()).to.include('<title>JSON Server</title>');",
+              "pm.test('Root returns status Ok, not the welcome page', function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json()).to.eql({ status: 'Ok' });",
               "});"
             ]
           }

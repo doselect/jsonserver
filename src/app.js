@@ -2,7 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const jsonServer = require("json-server");
-const middlewares = jsonServer.defaults();
+// json-server's static middleware serves its "Congrats" welcome page at /, which
+// exposes the json-server version and external links, so it is left out everywhere
+const middlewares = jsonServer.defaults().filter((middleware) => middleware.name !== "serveStatic");
 const app = jsonServer.create();
 
 app.disable("x-powered-by");
@@ -74,9 +76,19 @@ app.use("/json/:fileName", (req, res, next) => {
   serveData(req.params.fileName, req, res, next);
 });
 
+// Root returns JSON instead of the json-server welcome page
+app.get("/", (req, res) => {
+  return res.status(200).send({ status: "Ok" });
+});
+
 // Health Check
 app.use("/health", (req, res, next) => {
   return res.status(200).send({ status: "Ok" });
+});
+
+// Unknown paths get JSON instead of Express's default HTML 404 page
+app.use((req, res) => {
+  res.status(404).send({ error: "Not found" });
 });
 
 // Errors are logged on the server, clients only get a short message without the stack trace

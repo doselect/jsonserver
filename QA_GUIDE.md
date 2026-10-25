@@ -51,7 +51,7 @@ Use `https://` for an environment if it serves HTTPS, otherwise `http://`. All t
 
 | ID | Steps | Expected result |
 |---|---|---|
-| A1 | GET `/` | 200, HTML welcome page |
+| A1 | GET `/` | 200, `{"status":"Ok"}` (no json-server welcome page) |
 | A2 | GET `/health` | 200, `{"status":"Ok"}` |
 | A3 | GET `/api/notes` | 200, array of 50 notes |
 | A4 | GET `/api/notes/1` | 200, note with `"title": "Learn node.js"` |
