@@ -1,8 +1,33 @@
-# Postman Collection
+# Postman Collections
 
-`DoSelect-Json-Server.postman_collection.json` tests every route of the DoSelect JSON Server. It has 69 requests and 98 checks, and it is safe to run against any environment, including production, because write requests are never saved.
+| Collection | Requests | Use it for |
+|---|---|---|
+| `DoSelect-Json-Server-GET.postman_collection.json` | 52 GET, 118 checks | **QA of the read APIs.** Only GET requests, one per QA_GUIDE.md step (flows A-D, the GET checks of F, and G1), each checking the expected result from the guide |
+| `DoSelect-Json-Server.postman_collection.json` | 69, 98 checks | Every route, including POST, PUT, PATCH and DELETE |
+
+Both are safe to run against any environment, including production: the GET collection sends no writes, and write requests in the other one are never saved.
 
 For the full test plan and acceptance criteria, see [QA_GUIDE.md](../QA_GUIDE.md).
+
+## GET-only collection
+
+| Folder | What it covers |
+|---|---|
+| A - Smoke test | `/`, `/health`, the notes list and note 1 |
+| B1 - List every dataset | All 9 datasets, each with its record count from the guide |
+| B2-B5 - Get by id | Id 1 for the 7 datasets with ids, 404 `{}` for a missing id and for `inventory` and `matches`, inventory by barcode |
+| C - URL formats | `/api/notes/2`, `/api/notes/notes/2`, `/json/notes/notes/2`, no redirect, query string applied |
+| D - Filtering, search, sorting and pagination | D1-D10 on `/api/notes`, including the `X-Total-Count` and `Link` headers |
+| F - Errors and security (GET) | Unknown files and path tricks answer 404, no stack traces or server paths, `_like` is plain text, `?callback=` is ignored, no `X-Powered-By`, the server is still up afterwards |
+| G - CORS | The `Origin` header is echoed |
+
+Only `baseUrl` is needed (Collection → Variables). On the deployed environments the AWS load balancer answers its own 400 to URLs with `%2F` or `%00` before they reach the server; the F2 and F3 checks accept that as well as the server's 404.
+
+```bash
+npx newman run postman/DoSelect-Json-Server-GET.postman_collection.json --env-var baseUrl=https://jsonserver.stg3.sg1.chsh.in
+```
+
+The rest of this README describes the full collection; the import and Newman steps are the same for both.
 
 ## What's in it
 
