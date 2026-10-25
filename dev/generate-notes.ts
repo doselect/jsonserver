@@ -1,0 +1,68 @@
+// Writes data/notes.json from the fixed list below (`npm run generate:notes`). Edit the list, then run it
+import { writeData } from './write-data.ts'
+
+/** One to-do note. */
+interface Note {
+  /** Position in the list, starting at 1; used by get-by-id (`/api/notes/1`). */
+  id: number
+  /** Short heading. */
+  title: string
+  /** The note itself. */
+  description: string
+}
+
+/** The notes, in id order. The QA guide and the Postman collection check some of them by id and title. */
+const NOTES: Note[] = [
+  { id: 1, title: 'Learn node.js', description: 'Learn node.js from https://nodejs.org/en/' },
+  { id: 2, title: 'Buy fruits', description: 'Buy fruits from market' },
+  { id: 3, title: 'Do shoping', description: 'Do shoping at central mall with family and friends' },
+  { id: 4, title: 'Watch movie', description: 'Next Sunday watch movie at Inox' },
+  { id: 5, title: 'Send letters to John', description: 'Buy christmas greeting card for John from the corner shop' },
+  { id: 6, title: 'Plan for next trip', description: 'Shortlisted places that we can visit for the holidays Vatican, great barrier reef, grand canyon' },
+  { id: 7, title: 'Doctor\'s note', description: 'Eat the blue pill before breakfast and the red pill after dinner' },
+  { id: 8, title: 'Adam\'s train schedules', description: 'Adam\'s train arrives at 6:00 am, wake up at 5:00 am to get ready with everything' },
+  { id: 9, title: 'Car repairs', description: 'Tune the front brakes they are not tight, and have the oil changed' },
+  { id: 10, title: 'Expenses', description: 'Deposit $2000 for Randy\'s tution, and pay the life insurance premium before 21st of each month' },
+  { id: 11, title: 'Renew passport', description: 'Passport expires in March, book an appointment and keep two photos and address proof ready' },
+  { id: 12, title: 'Morning workout', description: '30 minutes of running followed by 15 minutes of stretching, Monday to Friday' },
+  { id: 13, title: 'Read a book', description: 'Finish reading Atomic Habits, at least 20 pages every night before bed' },
+  { id: 14, title: 'Pay electricity bill', description: 'Electricity bill is due on the 5th, pay online to avoid the late fee' },
+  { id: 15, title: 'Team meeting', description: 'Weekly sync with the team on Tuesday at 11:00 am, prepare the sprint status update' },
+  { id: 16, title: 'Mom\'s birthday', description: 'Order a cake and flowers for mom\'s birthday on the 14th, plan dinner at her favourite restaurant' },
+  { id: 17, title: 'Learn React hooks', description: 'Go through useState, useEffect and useContext with small examples from https://react.dev/' },
+  { id: 18, title: 'Clean the garage', description: 'Sort old boxes, donate unused tools and throw away broken items this Saturday' },
+  { id: 19, title: 'Dentist appointment', description: 'Dental check-up on Thursday at 4:30 pm, carry the previous X-ray reports' },
+  { id: 20, title: 'Grocery list', description: 'Milk, eggs, bread, rice, lentils, tomatoes, onions and green tea' },
+  { id: 21, title: 'Water the plants', description: 'Water the balcony plants every alternate day and add fertilizer once a month' },
+  { id: 22, title: 'Update resume', description: 'Add the latest project details and certifications to the resume and LinkedIn profile' },
+  { id: 23, title: 'Call the plumber', description: 'Kitchen sink is leaking, call the plumber and get it fixed before the weekend' },
+  { id: 24, title: 'Practice guitar', description: 'Practice chord changes for 20 minutes daily and learn one new song every week' },
+  { id: 25, title: 'Book flight tickets', description: 'Book return tickets to Bangalore for the long weekend, compare prices before booking' },
+  { id: 26, title: 'Learn SQL joins', description: 'Practice inner, left, right and full outer joins with sample employee and department tables' },
+  { id: 27, title: 'Car service', description: 'Car is due for its 10,000 km service, book a slot at the service center' },
+  { id: 28, title: 'Weekend trip', description: 'Plan a two day trip to the hills with friends, book a homestay and check the weather' },
+  { id: 29, title: 'Backup laptop', description: 'Take a full backup of documents and photos to the external hard drive and cloud storage' },
+  { id: 30, title: 'Pay credit card bill', description: 'Pay the full credit card amount before the 18th to avoid interest charges' },
+  { id: 31, title: 'Learn Git branching', description: 'Understand feature branches, rebasing and resolving merge conflicts from https://git-scm.com/book' },
+  { id: 32, title: 'Return library books', description: 'Return the three borrowed books to the city library before Friday' },
+  { id: 33, title: 'Meal prep', description: 'Prepare lunch boxes for the week on Sunday, include salads, rice and grilled vegetables' },
+  { id: 34, title: 'Health check-up', description: 'Annual full body check-up on Saturday morning, go fasting and carry the insurance card' },
+  { id: 35, title: 'Write blog post', description: 'Write a blog post on building REST APIs with Node.js and publish it by the end of the month' },
+  { id: 36, title: 'Parent teacher meeting', description: 'Attend the parent teacher meeting at school on the 12th at 10:00 am' },
+  { id: 37, title: 'Fix the bicycle', description: 'Replace the punctured tube and oil the chain of the bicycle' },
+  { id: 38, title: 'Learn TypeScript basics', description: 'Cover types, interfaces and generics from https://www.typescriptlang.org/docs/' },
+  { id: 39, title: 'Pay rent', description: 'Transfer the house rent to the landlord on the 1st of every month' },
+  { id: 40, title: 'Movie night', description: 'Friday movie night at home with family, order pizza and pick a comedy movie' },
+  { id: 41, title: 'Clean inbox', description: 'Unsubscribe from unwanted newsletters and archive old emails' },
+  { id: 42, title: 'Buy a gift for Sarah', description: 'Sarah\'s wedding is next month, buy a gift from her wedding registry' },
+  { id: 43, title: 'Yoga class', description: 'Join the evening yoga class at the community center, sessions start at 6:30 pm' },
+  { id: 44, title: 'Prepare presentation', description: 'Prepare slides for the quarterly review and share them with the manager by Wednesday' },
+  { id: 45, title: 'Change air filter', description: 'Replace the air conditioner filter, it has been more than three months' },
+  { id: 46, title: 'Learn Docker', description: 'Learn to write a Dockerfile and run a Node.js app in a container from https://docs.docker.com/' },
+  { id: 47, title: 'Visit grandparents', description: 'Visit grandparents this Sunday and take their monthly medicines along' },
+  { id: 48, title: 'File income tax return', description: 'Collect Form 16 and investment proofs and file the income tax return before the 31st of July' },
+  { id: 49, title: 'Organize photos', description: 'Sort last year\'s vacation photos into albums and delete the duplicates' },
+  { id: 50, title: 'Buy running shoes', description: 'Old shoes are worn out, buy a new pair of running shoes before the half marathon' }
+]
+
+writeData('notes', NOTES)

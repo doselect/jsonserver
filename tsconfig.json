@@ -1,0 +1,31 @@
+{
+  // Type checks everything (src, tests, dev scripts) without emitting. The build uses tsconfig.build.json
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "useUnknownInCatchVariables": true,
+    "verbatimModuleSyntax": true,
+    // Node runs src/*.ts directly by stripping types: only type syntax Node can erase is allowed (no enums,
+    // namespaces or constructor parameter properties), and imports name the real .ts files
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    // `npm run build` still emits dist/*.js with these imports rewritten to .js
+    "rewriteRelativeImportExtensions": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*", "test/**/*", "dev/**/*.ts", "vitest.config.ts"]
+}
