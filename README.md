@@ -14,6 +14,21 @@
 - Set `PORT` to change the local port (default 8888).
 - Requires Node.js 24 LTS (24.22.1 or newer 24.x, see .nvmrc).
 
+## Logging
+Logs are JSON lines in the DoSelect logging standard, the same format as eden: `levelname, asctime, module, process, thread, message, do_service, do_role`, then snake_case fields. Every request gets one `Request completed.` line (except `/health`), and every line for a request carries its `request_id` (taken from `X-Request-Id` or generated, and returned in the `X-Request-Id` header).
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `LOG_LEVEL` | `INFO` | DEBUG, INFO, WARNING, ERROR or CRITICAL |
+| `LOG_STDOUT` | `true` | Write logs to stdout |
+| `LOG_DIRECTORY` | (none) | Also write logs to `<LOG_DIRECTORY>/application.log`. Every day the previous day's lines move to `application-YYYY-MM-DD.log.gz` |
+| `LOG_RETENTION_DAYS` | `14` | Days of log files kept, older ones are deleted |
+| `SERVICE_NAME`, `SERVICE_ROLE` | `jsonserver` | `do_service` and `do_role` on every line |
+| `LOG_PRETTY` | `false` | Indented JSON for local reading |
+| `SILENT` | `false` | Turn all logging off |
+
+On servers the playbook sets `LOG_DIRECTORY=/webapps/jsonserver/logs/` and `LOG_STDOUT=false`.
+
 ## Testing
 - [QA_GUIDE.md](QA_GUIDE.md): test flows, expected results and acceptance criteria.
 - [postman/README.md](postman/README.md): how to run the Postman collection in the app or with Newman.
