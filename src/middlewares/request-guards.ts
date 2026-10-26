@@ -1,8 +1,9 @@
 // Checks that run before json-server sees a request, for the ways its defaults can be abused:
-//   - bodies up to 10 MB, each cloned with the whole data file on a write  -> 413 past MAX_BODY_BYTES
+//   - bodies up to 10 MB, each cloned with the whole data file on a write  -> 413 past MAX_BODY_BYTES, counted after
+//     decoding, chunked and gzip/deflate bodies included
 //   - `<field>_like` values compiled as a RegExp (a crafted one blocks the server) -> escaped, capped at MAX_LIKE_LENGTH
 //   - `?callback=` turning the answer into JSONP (script inclusion from any site) -> dropped
-import type { NextFunction, Request, RequestHandler, Response } from 'express'
+import express, { type NextFunction, type Request, type RequestHandler, type Response } from 'express'
 import rootLogger from '../logging/logger.ts'
 import { escapeRegExp } from '../utils/http.ts'
 import { JSONP_CALLBACK_PARAM, LIKE_SUFFIX, MAX_BODY_BYTES, MAX_LIKE_LENGTH } from '../constants/http.ts'
@@ -13,8 +14,8 @@ const logger = rootLogger.forModule(import.meta.filename)
 /**
  * Rejects requests whose declared body is larger than MAX_BODY_BYTES with 413.
  *
- * Checks the Content-Length header before anything reads the body. A chunked body without Content-Length is still
- * capped by json-server's own body parser (10 MB), which answers 413 through the app's error handler.
+ * Checks the Content-Length header before anything reads the body. Bodies without it (chunked) or compressed ones are
+ * capped while they are read, by {@link parseBody}.
  *
  * @returns {RequestHandler} Express middleware.
  */
@@ -28,6 +29,21 @@ export function limitBodySize (): RequestHandler {
     }
     next()
   }
+}
+
+/**
+ * Parses JSON and form bodies with a MAX_BODY_BYTES limit, before json-server's own parser (10 MB) can.
+ *
+ * The limit counts the decoded bytes, so it also holds for chunked bodies and gzip/deflate ones that inflate past
+ * it; those answer 413 through the app's error handler. json-server's parser then skips the already parsed body.
+ *
+ * @returns {RequestHandler[]} Express middleware: the JSON parser, then the urlencoded one.
+ */
+export function parseBody (): RequestHandler[] {
+  return [
+    express.json({ limit: MAX_BODY_BYTES }),
+    express.urlencoded({ extended: false, limit: MAX_BODY_BYTES })
+  ]
 }
 
 /**

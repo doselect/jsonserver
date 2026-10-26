@@ -7,7 +7,7 @@ import rootLogger from './logging/logger.ts'
 import { endpoint } from './utils/http.ts'
 import { errorStatus } from './utils/errors.ts'
 import requestContext from './middlewares/request-context.ts'
-import { limitBodySize, safeQuery } from './middlewares/request-guards.ts'
+import { limitBodySize, parseBody, safeQuery } from './middlewares/request-guards.ts'
 import createDataStore, { type DataStore } from './services/data-store.ts'
 import dataRoutes from './routes/data.ts'
 import health from './routes/health.ts'
@@ -34,9 +34,9 @@ export interface JsonServerApp {
  * Builds the Express app.
  *
  * Middleware order matters: request context (request_id, access log), json-server's defaults (CORS, gzip, no-cache
- * headers) without its static welcome page and morgan logger, the request guards (body size, `_like`, JSONP), the
- * data routes, `/` and `/health`, 404 JSON for anything else, and a final error handler that logs the error and
- * answers a short JSON message without the stack trace. Creates no sockets; index.ts passes the app to
+ * headers) without its static welcome page and morgan logger, the request guards (body size and parsing, `_like`,
+ * JSONP), the data routes, `/` and `/health`, 404 JSON for anything else, and a final error handler that logs the
+ * error and answers a short JSON message without the stack trace. Creates no sockets; index.ts passes the app to
  * http.createServer.
  *
  * @param {Partial<AppOptions>} [options] - Overrides for tests.
@@ -50,12 +50,16 @@ export default function createApp ({ dataDirectory = config.dataDirectory }: Par
 
   // Don't tell the user we are serving the API requests through expressjs
   app.disable('x-powered-by')
+  // Express's own last-resort handler (an error thrown by the error handler below, a target URL its router cannot
+  // parse) sends the stack trace to the client unless env is production, whatever NODE_ENV says
+  app.set('env', 'production')
 
   app.use(requestContext())
   // json-server's static middleware serves its "Congrats" welcome page at /, which exposes the json-server version
   // and external links, so it is left out everywhere. Its morgan logger is off too: requests are logged as JSON
   app.use(jsonServer.defaults({ logger: false }).filter((middleware) => middleware.name !== 'serveStatic'))
   app.use(limitBodySize())
+  app.use(parseBody())
   app.use(safeQuery())
   app.use(dataRoutes(store))
   app.use(health())
@@ -66,7 +70,7 @@ export default function createApp ({ dataDirectory = config.dataDirectory }: Par
   })
 
   // Errors are logged on the server, clients only get a short message without the stack trace. Client errors
-  // (malformed JSON body, body too large for json-server's parser) are WARNING, anything else ERROR.
+  // (malformed JSON body, body too large once decoded) are WARNING, anything else ERROR.
   // Express recognizes an error handler by its 4 parameters, so `_next` must stay
   app.use(function (err: unknown, req: Request, res: Response, _next: NextFunction) {
     const status = errorStatus(err)
@@ -75,7 +79,8 @@ export default function createApp ({ dataDirectory = config.dataDirectory }: Par
     } else {
       logger.error('Unexpected error while processing request.', { endpoint: endpoint(req), status_code: status, err })
     }
-    res.status(status).send({ error: status < 500 ? 'Invalid request' : 'Something went wrong' })
+    const error = status === 413 ? 'Request body too large' : status < 500 ? 'Invalid request' : 'Something went wrong'
+    res.status(status).send({ error })
   })
 
   return { app, store }

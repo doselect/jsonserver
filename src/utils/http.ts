@@ -7,12 +7,18 @@ import type { Request } from 'express'
  *
  * Full request path, also inside mounted middleware where Express strips the mount prefix from req.path (and after
  * routes/data.ts rewrites req.url). Parsed from `req.originalUrl` with a dummy base; the path stays percent-encoded.
+ * Never throws: a target URL that cannot parse (`//`, `http://[`) gives the raw text before `?`, as the access log and the
+ * error handler call it for every request, malformed ones included.
  *
  * @param {Request} req - Express request.
  * @returns {string} Path such as `/api/notes/1`.
  */
 export function endpoint (req: Request): string {
-  return new URL(req.originalUrl, 'http://localhost').pathname
+  try {
+    return new URL(req.originalUrl, 'http://localhost').pathname
+  } catch {
+    return req.originalUrl.split('?')[0] ?? ''
+  }
 }
 
 /**

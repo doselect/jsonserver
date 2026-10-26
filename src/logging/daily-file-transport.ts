@@ -6,9 +6,11 @@
 //   - rotation runs on the first line of a new day and from a one-minute timer, so quiet days rotate too
 //   - at startup, an application.log left from an earlier day (down at midnight) is archived under its mtime's date
 //   - archives older than LOG_RETENTION_DAYS are deleted; only files matching that archive pattern are touched
+//   - a day file left uncompressed (gzip failed, or the process died during it) is gzipped at startup and on every
+//     one-minute check, replacing any partial .gz
 //   - failures never stop the server: a write error (disk full, permissions) or a failed rename, gzip or cleanup
-//     writes one JSON line to stderr; the file is reopened (or the rotation retried) on the next one-minute check,
-//     and a deleted application.log is recreated there too. Lines written while the file is broken are lost
+//     writes one JSON line to stderr; the file is reopened (or the rotation or gzip retried) on the next one-minute
+//     check, and a deleted application.log is recreated there too. Lines written while the file is broken are lost
 // Only one process may write the file: supervisor runs a single jsonserver process per host. Several processes writing
 // and rotating the same file would race on the rename.
 import fs from 'node:fs'
@@ -82,6 +84,12 @@ export class DailyFileTransport extends TransportStream {
   #broken = false
   /** Compression and cleanup still running, so close() can wait for them. */
   #pending: Promise<void> = Promise.resolve()
+  /** Day files a rotation renamed and has not gzipped yet; recoverArchives() leaves them to it. */
+  readonly #rotating = new Set<string>()
+  /** Set while a recoverArchives() run is queued, so the one-minute check does not queue another. */
+  #recoveryQueued = false
+  /** Set when an archive job failed and reported, so a failure that repeats every minute is reported once. */
+  #archiveFailing = false
   /** Set once close() ran; a second call does nothing. */
   #closing = false
   /** Resolves when close() has ended the stream and every pending archive job has settled. */
@@ -96,7 +104,8 @@ export class DailyFileTransport extends TransportStream {
    * @param {string} options.filename - Path of the live log file; its directory is created if missing.
    * @param {number} options.retentionDays - Delete archives older than this many days.
    * @param {Record<string, string>} [options.failureFields] - Extra fields for failure lines on stderr.
-   * @throws {Error} When the log directory cannot be created (EACCES, ENOTDIR, ...); the logger then uses stdout.
+   * @throws {Error} When the log directory cannot be created or application.log cannot be opened for writing (EACCES,
+   *   ENOTDIR, EISDIR, ...); the logger then uses stdout and index.ts exits.
    */
   constructor ({ filename, retentionDays, failureFields = {}, ...options }: DailyFileTransportOptions) {
     super(options)
@@ -117,7 +126,10 @@ export class DailyFileTransport extends TransportStream {
     }
     this.day = stat ? localDay(stat.mtime) : localDay()
     this.rotateIfNewDay()
-    this.#stream ??= this.#open()
+    // Opened synchronously so a file that cannot be written (owned by another user, a directory) fails startup here,
+    // instead of in a stream error after the server is already listening
+    this.#stream = this.#open(fs.openSync(filename, 'a'))
+    this.#queueRecovery()
 
     // Also rotates on days with no log lines; unref so the timer never keeps the process alive
     this.#timer = setInterval(() => this.check(), LOG_ROTATE_CHECK_MS).unref()
@@ -155,10 +167,11 @@ export class DailyFileTransport extends TransportStream {
    * A write or open error (disk full, permissions) is reported once on stderr and destroys the stream; it never
    * becomes an uncaught exception. check() reopens a destroyed stream within a minute.
    *
+   * @param {number} [fd] - A descriptor already opened on the live file (in append mode); else the stream opens it.
    * @returns {fs.WriteStream} The new stream.
    */
-  #open (): fs.WriteStream {
-    const stream = fs.createWriteStream(this.filename, { flags: 'a' })
+  #open (fd?: number): fs.WriteStream {
+    const stream = fs.createWriteStream(this.filename, { flags: 'a', fd })
     stream.on('error', (err) => {
       if (!this.#broken) this.reportFailure('Failed to write the log file and will reopen it within a minute.', err)
       this.#broken = true
@@ -186,6 +199,66 @@ export class DailyFileTransport extends TransportStream {
     if (this.#closing) return
     this.rotateIfNewDay()
     if (this.#stream?.destroyed || !fs.existsSync(this.filename)) this.#reopen().catch(() => {})
+    this.#queueRecovery()
+  }
+
+  /**
+   * Runs an archive job (gzip, cleanup) after the ones already queued, reporting a failure on stderr.
+   *
+   * A failure is reported once; after a job succeeds the next failure is reported again. Never rejects.
+   *
+   * @param {() => Promise<void>} job - The work to run.
+   * @returns {void}
+   */
+  #queueArchiveJob (job: () => Promise<void>): void {
+    this.#pending = this.#pending.then(job).then(
+      () => { this.#archiveFailing = false },
+      (err: unknown) => {
+        if (!this.#archiveFailing) this.reportFailure('Failed to compress or clean up rotated log files and will retry within a minute.', err)
+        this.#archiveFailing = true
+      })
+  }
+
+  /**
+   * Queues a recoverArchives() run, unless one is already waiting.
+   *
+   * @returns {void}
+   */
+  #queueRecovery (): void {
+    if (this.#recoveryQueued) return
+    this.#recoveryQueued = true
+    this.#queueArchiveJob(async () => {
+      this.#recoveryQueued = false
+      // Not on the way out: close() waits for the queue, and exit has only EXIT_FLUSH_TIMEOUT_MS
+      if (!this.#closing) await this.recoverArchives()
+    })
+  }
+
+  /**
+   * Gzips every day file left uncompressed (`<name>-YYYY-MM-DD(-N).log`), then deletes archives past retention.
+   *
+   * Such a file remains when gzip failed (disk full) or the process stopped during it; a partial `.gz` next to it
+   * is replaced. Files a rotation is still writing or compressing are skipped.
+   *
+   * @returns {Promise<void>} Resolves when every leftover day file is gzipped and old archives are gone.
+   * @throws {Error} Directory read, gzip or unlink errors; the caller reports them.
+   */
+  async recoverArchives (): Promise<void> {
+    const dir = path.dirname(this.filename)
+    const pattern = new RegExp(`^${this.#base}-\\d{4}-\\d{2}-\\d{2}(-\\d+)?\\.log$`)
+    let files: string[]
+    try {
+      files = await fs.promises.readdir(dir)
+    } catch (err) {
+      // The folder is gone: nothing to recover, and the failed reopen of application.log is already reported
+      if (errorCode(err) === 'ENOENT') return
+      throw err
+    }
+    for (const file of files) {
+      const archive = path.join(dir, file)
+      if (pattern.test(file) && !this.#rotating.has(archive)) await this.compress(archive)
+    }
+    await this.deleteOldArchives()
   }
 
   /**
@@ -245,14 +318,20 @@ export class DailyFileTransport extends TransportStream {
     }
     this.day = today
     this.#retryRotationAt = 0
+    this.#rotating.add(archive)
 
-    // At startup there is no stream yet; otherwise the old one finishes its pending writes first
+    // At startup there is no stream yet; otherwise the old one finishes its pending writes first. A failed gzip
+    // leaves the day file for recoverArchives() to retry on the next check
     const ended = this.#stream ? this.#reopen() : Promise.resolve()
-    this.#pending = this.#pending
-      .then(() => ended)
-      .then(() => this.compress(archive))
-      .then(() => this.deleteOldArchives())
-      .catch((err: unknown) => this.reportFailure('Failed to compress or clean up rotated log files.', err))
+    this.#queueArchiveJob(async () => {
+      try {
+        await ended
+        await this.compress(archive)
+      } finally {
+        this.#rotating.delete(archive)
+      }
+      await this.deleteOldArchives()
+    })
   }
 
   /**

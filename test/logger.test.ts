@@ -365,6 +365,91 @@ it('exits with a CRITICAL line on stdout when LOG_DIRECTORY cannot be used', () 
   }
 })
 
+it('exits with a CRITICAL line on stdout when application.log itself cannot be opened', () => {
+  const dir = logDir()
+  try {
+    // The folder is writable but application.log is a directory: opening it fails even as root
+    fs.mkdirSync(path.join(dir, 'application.log'))
+    const { status, stdout } = runServer({ LOG_DIRECTORY: dir, LOG_STDOUT: 'false' })
+    assert.equal(status, 1)
+    const [line] = parseLines(stdout)
+    assert.equal(line?.message, 'Failed to open the log file in LOG_DIRECTORY.')
+    assert.equal(line?.error_code, 'EISDIR')
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+it('gzips a day file left uncompressed at startup, replacing a partial archive', () => {
+  const dir = logDir()
+  const file = path.join(dir, 'application.log')
+  try {
+    // As after a crash during gzip: the renamed day file and a truncated .gz beside it
+    fs.writeFileSync(path.join(dir, 'application-2099-01-01.log'), 'kept-1\nkept-2\n')
+    fs.writeFileSync(path.join(dir, 'application-2099-01-01.log.gz'), zlib.gzipSync('kept-1\n').subarray(0, 10))
+    const { status, stderr } = runModule(dir, `
+      import { DailyFileTransport } from ${TRANSPORT}
+      const transport = new DailyFileTransport({ filename: ${JSON.stringify(file)}, retentionDays: 14 })
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      transport.close()
+      await transport.whenClosed
+    `)
+    assert.equal(status, 0, stderr)
+    assert.equal(stderr, '')
+    assert.deepEqual(fs.readdirSync(dir).sort(), ['application-2099-01-01.log.gz', 'application.log'])
+    assert.deepEqual(readLines(path.join(dir, 'application-2099-01-01.log.gz')), ['kept-1', 'kept-2'])
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+it('retries a failed gzip on the next check and reports the failure once', () => {
+  const dir = logDir()
+  const file = path.join(dir, 'application.log')
+  const yesterday = localDay(new Date(Date.now() - DAY))
+  const blocker = path.join(dir, `application-${yesterday}-1.log.gz`)
+  try {
+    // An earlier archive for yesterday, so the rotation writes -1; a directory in the way makes its gzip fail
+    fs.writeFileSync(path.join(dir, `application-${yesterday}.log.gz`), zlib.gzipSync('earlier\n'))
+    const { status, stderr } = runModule(dir, `
+      import fs from 'node:fs'
+      import { DailyFileTransport } from ${TRANSPORT}
+      const transport = new DailyFileTransport({ filename: ${JSON.stringify(file)}, retentionDays: 14 })
+      const write = (text) => new Promise((resolve) => transport.log({ [Symbol.for('message')]: text }, resolve))
+      const tick = () => new Promise((resolve) => setTimeout(resolve, 100))
+      await tick()
+      await write('yesterday')
+      transport.day = ${JSON.stringify(yesterday)}
+      // After the rename picked the -1 name: its .gz is now blocked
+      const rotate = transport.rotateIfNewDay.bind(transport)
+      transport.rotateIfNewDay = () => {
+        rotate()
+        transport.rotateIfNewDay = rotate
+        fs.mkdirSync(${JSON.stringify(blocker)})
+      }
+      await write('today')
+      await tick()
+      transport.check()
+      await tick()
+      fs.rmdirSync(${JSON.stringify(blocker)})
+      transport.check()
+      await tick()
+      transport.close()
+      await transport.whenClosed
+    `)
+    assert.equal(status, 0, stderr)
+    const failures = stderr.trim().split('\n').map((line) => JSON.parse(line) as LogLine)
+    assert.equal(failures.length, 1, 'reported once, not on every check')
+    assert.equal(failures[0]?.message, 'Failed to compress or clean up rotated log files and will retry within a minute.')
+    assert.equal(failures[0]?.error_code, 'EISDIR')
+    assert.deepEqual(fs.readdirSync(dir).sort(), [`application-${yesterday}-1.log.gz`, `application-${yesterday}.log.gz`, 'application.log'])
+    assert.deepEqual(readLines(blocker), ['yesterday'])
+    assert.deepEqual(readLines(file), ['today'])
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 it('survives a log file that cannot be written, reports it once, and recovers', () => {
   const dir = logDir()
   const logs = path.join(dir, 'logs')

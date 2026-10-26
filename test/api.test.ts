@@ -3,6 +3,8 @@
 // Mirrors the flows in QA_GUIDE.md
 import { afterAll, beforeAll, describe, it } from 'vitest'
 import assert from 'node:assert/strict'
+import net from 'node:net'
+import zlib from 'node:zlib'
 import { blockedByLoadBalancer, request, startServer, type RunningServer } from './helpers.ts'
 
 let server: RunningServer
@@ -14,6 +16,25 @@ beforeAll(async () => {
 afterAll(async () => {
   await server.close()
 })
+
+/**
+ * Sends a raw GET with `target` as the request line's URL, which fetch would normalize, and returns the raw answer.
+ *
+ * @param {string} target - The request target exactly as sent, e.g. `http://[`.
+ * @returns {Promise<string>} Status line, headers and body.
+ */
+function rawGet (target: string): Promise<string> {
+  const { hostname, port } = new URL(server.url)
+  return new Promise((resolve, reject) => {
+    let data = ''
+    const socket = net.connect(Number(port), hostname, () => {
+      socket.write(`GET ${target} HTTP/1.1\r\nHost: ${hostname}\r\nConnection: close\r\n\r\n`)
+    })
+    socket.on('data', (chunk) => { data += chunk.toString() })
+    socket.on('close', () => resolve(data))
+    socket.on('error', reject)
+  })
+}
 
 /** A note record. */
 interface Note { id: number, title: string, description: string }
@@ -129,6 +150,53 @@ describe('guards', () => {
     })
     assert.equal(res.status, 413)
     assert.deepEqual(res.body, { error: 'Request body too large' })
+  })
+
+  it('rejects chunked bodies over 100 KiB with 413', async () => {
+    const chunk = new TextEncoder().encode(JSON.stringify({ title: 'x'.repeat(200 * 1024) }))
+    const body = new ReadableStream({ start (controller) { controller.enqueue(chunk); controller.close() } })
+    const res = await request(`${server.url}/api/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      duplex: 'half'
+    } as RequestInit)
+    assert.equal(res.status, 413)
+    assert.deepEqual(res.body, { error: 'Request body too large' })
+  })
+
+  it('rejects gzip bodies that inflate past 100 KiB with 413', async () => {
+    const body = zlib.gzipSync(JSON.stringify({ title: 'x'.repeat(200 * 1024) }))
+    assert.ok(body.length < 100 * 1024, 'small on the wire')
+    const res = await request(`${server.url}/api/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Encoding': 'gzip' },
+      body
+    })
+    assert.equal(res.status, 413)
+    assert.deepEqual(res.body, { error: 'Request body too large' })
+  })
+
+  it('still accepts a gzip body under the limit', async () => {
+    const res = await request(`${server.url}/api/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Encoding': 'gzip' },
+      body: zlib.gzipSync(JSON.stringify({ title: 'zipped', description: 'small' }))
+    })
+    assert.equal(res.status, 201)
+    assert.equal((res.body as Note).title, 'zipped')
+  })
+
+  it('answers request targets that do not parse without a stack trace', async () => {
+    // A deployed server sits behind the load balancer, which may answer these itself
+    if (process.env.TARGET_URL) return
+    for (const target of ['//', '//?x=1', 'http://[']) {
+      const reply = await rawGet(target)
+      assert.match(reply, /^HTTP\/1\.1 4\d\d /, target)
+      assert.doesNotMatch(reply, /TypeError|\bat .*\(/, target)
+    }
+    const reply = await rawGet('//')
+    assert.deepEqual(JSON.parse(reply.slice(reply.indexOf('\r\n\r\n') + 4)), { error: 'Not found' })
   })
 
   it('answers a malformed body with a short error and no stack trace', async () => {

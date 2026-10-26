@@ -27,6 +27,11 @@ describe('endpoint', () => {
     assert.equal(endpoint({ originalUrl: '/api/..%2Fpackage' } as Request), '/api/..%2Fpackage')
     assert.equal(endpoint({ originalUrl: '/' } as Request), '/')
   })
+
+  it('returns the raw path instead of throwing for a target URL that does not parse', () => {
+    assert.equal(endpoint({ originalUrl: '//?x=1' } as Request), '//')
+    assert.equal(endpoint({ originalUrl: 'http://[' } as Request), 'http://[')
+  })
 })
 
 describe('remoteAddr', () => {
