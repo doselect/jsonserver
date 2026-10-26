@@ -1,0 +1,941 @@
+{
+  "info": {
+    "_postman_id": "7a5ca588-9122-4d1b-8c06-6ad31908c050",
+    "name": "DoSelect JSON Server",
+    "description": "Coverage includes all dataset list routes, item lookups where records have IDs, reusable CRUD methods, and representative JSON Server filter/search/sort/pagination queries. Change collection variables to try other values. Arbitrary query values have infinitely many combinations, so the query folder provides composable examples rather than enumerating every value. Data is fetched from remote JSON files and write requests do not persist changes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8888"
+    },
+    {
+      "key": "resource",
+      "value": "notes"
+    },
+    {
+      "key": "recordId",
+      "value": "1"
+    },
+    {
+      "key": "queryField",
+      "value": "title"
+    },
+    {
+      "key": "queryValue",
+      "value": "Learn node.js"
+    },
+    {
+      "key": "sortField",
+      "value": "id"
+    },
+    {
+      "key": "offset",
+      "value": "0"
+    },
+    {
+      "key": "pageSize",
+      "value": "5"
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Response is successful', function () {",
+          "    pm.expect(pm.response.code).to.be.within(200, 299);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Root returns status Ok, not the welcome page', function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json()).to.eql({ status: 'Ok' });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Health status is Ok', function () {",
+              "    pm.expect(pm.response.json()).to.deep.equal({ status: 'Ok' });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reusable write methods (select resource variable)",
+      "description": "Change the resource collection variable to a dataset name. POST includes an id so it works with datasets whose records do not already have one. PUT, PATCH and DELETE need an existing item ID; inventory and matches do not have IDs in their source records. The service does not persist changes.",
+      "item": [
+        {
+          "name": "POST - Create item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"postman-test\",\n  \"title\": \"Postman test record\",\n  \"description\": \"Created by the collection\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/{{resource}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Item is created', function () {",
+                  "    pm.expect(pm.response.code).to.eql(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT - Replace item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"title\": \"Postman replacement record\",\n  \"description\": \"Replaced by the collection\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/{{resource}}/{{recordId}}"
+          }
+        },
+        {
+          "name": "PATCH - Update item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman updated record\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/{{resource}}/{{recordId}}"
+          }
+        },
+        {
+          "name": "DELETE - Remove item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}/{{recordId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dataset CRUD matrix",
+      "description": "Run each dataset folder to test every supported write method. Inventory and matches have no IDs in their source data, so only POST is included for those datasets. Mutations do not persist on this service.",
+      "item": [
+        {
+          "name": "Countries",
+          "variable": [{ "key": "resource", "value": "countries" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"name\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"name\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Domestic Flights",
+          "variable": [{ "key": "resource", "value": "domestic_flights" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"departure_from\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"departure_from\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"departure_from\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Employees",
+          "variable": [{ "key": "resource", "value": "employees" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"firstName\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"firstName\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"firstName\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Flights",
+          "variable": [{ "key": "resource", "value": "flights" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"flight_name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"flight_name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"flight_name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Inventory",
+          "variable": [{ "key": "resource", "value": "inventory" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"barcode\":\"postman-test\",\"item\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } }
+          ]
+        },
+        {
+          "name": "Leaves",
+          "variable": [{ "key": "resource", "value": "leaves" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Matches",
+          "variable": [{ "key": "resource", "value": "matches" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"competition\":\"Test\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } }
+          ]
+        },
+        {
+          "name": "Notes",
+          "variable": [{ "key": "resource", "value": "notes" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"title\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"title\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"title\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        },
+        {
+          "name": "Universities",
+          "variable": [{ "key": "resource", "value": "universities" }],
+          "item": [
+            { "name": "POST", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":\"postman-test\",\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}" } },
+            { "name": "PUT", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"id\":1,\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "PATCH", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\":\"Postman\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/{{resource}}/1" } },
+            { "name": "DELETE", "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/api/{{resource}}/1" } }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Query parameter patterns",
+      "description": "Reusable JSON Server v0.17 examples for field filters, full-text search, sort, pagination, and combining query parameters. Change the collection variables to test different fields and values.",
+      "item": [
+        {
+          "name": "Filter by field equality",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?{{queryField}}={{queryValue}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Filter returns an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter by numeric range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?id_gte=1&id_lte={{pageSize}}"
+          }
+        },
+        {
+          "name": "Filter by not-equal operator",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?id_ne={{recordId}}"
+          }
+        },
+        {
+          "name": "Filter by partial text match",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?title_like=Learn"
+          }
+        },
+        {
+          "name": "Match multiple values",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?id=1&id=2"
+          }
+        },
+        {
+          "name": "Full-text search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?q={{queryValue}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Search returns an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sort ascending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?_sort={{sortField}}&_order=asc"
+          }
+        },
+        {
+          "name": "Sort descending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?_sort={{sortField}}&_order=desc"
+          }
+        },
+        {
+          "name": "Paginate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?_start={{offset}}&_limit={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Page size does not exceed the requested limit', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').with.length.at.most(Number(pm.variables.get('pageSize')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Paginate by page number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?_page=1&_limit={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Page response is an array within the requested limit', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').with.length.at.most(Number(pm.variables.get('pageSize')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Paginate by start and end indexes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?_start={{offset}}&_end={{pageSize}}"
+          }
+        },
+        {
+          "name": "Combine filter, sort and pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/{{resource}}?{{queryField}}={{queryValue}}&_sort={{sortField}}&_order=asc&_start={{offset}}&_limit={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Combined query returns an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dataset APIs",
+      "item": [
+        {
+          "name": "List Countries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/countries"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Countries are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Country by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/countries/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Country is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Domestic Flights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/domestic_flights"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Domestic flights are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Domestic Flight by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/domestic_flights/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Domestic flight is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/employees"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Employees are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/employees/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Employee is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Flights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/flights"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Flights are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Flight by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/flights/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Flight is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Inventory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/inventory"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Inventory is returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Leaves",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/leaves"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Leaves are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Leave by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/leaves/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Leave is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Matches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/matches"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Matches are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Notes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/notes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Notes are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Note by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/notes/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Note is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Notes by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/notes?id={{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Query returns an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Universities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/universities"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Universities are returned as a non-empty array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get University by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/universities/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('University is returned', function () {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(pm.variables.get('recordId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman test note\",\n  \"description\": \"Created by the Postman collection\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/notes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Created note is returned', function () {",
+                  "    pm.expect(pm.response.code).to.eql(201);",
+                  "    pm.expect(pm.response.json().title).to.eql('Postman test note');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"title\": \"Postman replacement note\",\n  \"description\": \"Replaced by the Postman collection\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/notes/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Note is replaced', function () {",
+                  "    pm.expect(pm.response.code).to.eql(200);",
+                  "    pm.expect(pm.response.json().title).to.eql('Postman replacement note');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Note",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman updated note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/notes/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Note is updated', function () {",
+                  "    pm.expect(pm.response.code).to.eql(200);",
+                  "    pm.expect(pm.response.json().title).to.eql('Postman updated note');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/notes/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Note is deleted', function () {",
+                  "    pm.expect(pm.response.code).to.eql(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
