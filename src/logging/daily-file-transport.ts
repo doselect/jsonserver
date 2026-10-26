@@ -5,7 +5,8 @@
 //     with the day they were written; -1, -2, ... if that day already has an archive)
 //   - rotation runs on the first line of a new day and from a one-minute timer, so quiet days rotate too
 //   - at startup, an application.log left from an earlier day (down at midnight) is archived under its mtime's date
-//   - archives older than LOG_RETENTION_DAYS are deleted; only files matching that archive pattern are touched
+//   - archives older than LOG_RETENTION_DAYS are deleted, uncompressed day files too (gzip kept failing); only files
+//     matching that archive pattern are touched
 //   - a day file left uncompressed (gzip failed, or the process died during it) is gzipped at startup and on every
 //     one-minute check, replacing any partial .gz
 //   - failures never stop the server: a write error (disk full, permissions) or a failed rename, gzip or cleanup
@@ -365,8 +366,9 @@ export class DailyFileTransport extends TransportStream {
   /**
    * Deletes archives whose day is more than `retentionDays` ago.
    *
-   * Only names matching `<name>-YYYY-MM-DD.log.gz` or `<name>-YYYY-MM-DD-N.log.gz` are considered; every other file
-   * in the directory is left alone. Does nothing unless `retentionDays` is a positive integer: NaN or 0 would put
+   * Only names matching `<name>-YYYY-MM-DD(-N).log.gz`, or the same without `.gz` (a day file whose gzip kept
+   * failing, so it cannot pile up), are considered; every other file in the directory, and a day file a rotation is
+   * still writing, is left alone. Does nothing unless `retentionDays` is a positive integer: NaN or 0 would put
    * the cutoff after every archive and delete them all.
    *
    * @returns {Promise<void>} Resolves when the old archives are gone.
@@ -375,11 +377,12 @@ export class DailyFileTransport extends TransportStream {
   async deleteOldArchives (): Promise<void> {
     if (!Number.isInteger(this.retentionDays) || this.retentionDays < 1) return
     const dir = path.dirname(this.filename)
-    const pattern = new RegExp(`^${this.#base}-(\\d{4}-\\d{2}-\\d{2})(-\\d+)?\\.log\\.gz$`)
+    const pattern = new RegExp(`^${this.#base}-(\\d{4}-\\d{2}-\\d{2})(-\\d+)?\\.log(\\.gz)?$`)
     const oldest = localDay(new Date(Date.now() - this.retentionDays * DAY_MS))
     for (const file of await fs.promises.readdir(dir)) {
       const match = pattern.exec(file)
-      if (match?.[1] !== undefined && match[1] < oldest) await fs.promises.unlink(path.join(dir, file))
+      const archive = path.join(dir, file)
+      if (match?.[1] !== undefined && match[1] < oldest && !this.#rotating.has(archive)) await fs.promises.unlink(archive)
     }
   }
 

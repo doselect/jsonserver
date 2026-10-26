@@ -257,15 +257,17 @@ it('archives an application.log left from an earlier day under its mtime date be
   }
 })
 
-it('deletes archives older than LOG_RETENTION_DAYS and keeps newer ones and unrelated files', () => {
+it('deletes archives older than LOG_RETENTION_DAYS, uncompressed ones too, and keeps newer ones and unrelated files', () => {
   const dir = logDir()
   const daysAgo = (n: number): string => localDay(new Date(Date.now() - n * DAY))
   const old = daysAgo(20)
   const recent = daysAgo(3)
   const yesterday = daysAgo(1)
   try {
-    const kept = [`application-${recent}.log.gz`, 'notes.txt', `application-${old}.txt`, `other-${old}.log.gz`, `application-${old}.log`]
-    for (const name of [`application-${old}.log.gz`, `application-${old}-1.log.gz`, ...kept]) fs.writeFileSync(path.join(dir, name), 'x')
+    const kept = [`application-${recent}.log.gz`, 'notes.txt', `application-${old}.txt`, `other-${old}.log.gz`]
+    // An old day file left uncompressed (gzip kept failing) expires like its .gz would
+    const expired = [`application-${old}.log.gz`, `application-${old}-1.log.gz`, `application-${old}-2.log`]
+    for (const name of [...expired, ...kept]) fs.writeFileSync(path.join(dir, name), 'x')
     // Cleanup runs after a rotation; a stale file makes one happen at startup
     staleLog(dir, 'yesterday\n', new Date(Date.now() - DAY))
     logIn({ LOG_STDOUT: 'false', LOG_DIRECTORY: dir, LOG_RETENTION_DAYS: '14' })
